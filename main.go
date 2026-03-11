@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -14,7 +13,6 @@ import (
 	"github.com/nexfortisme/bart/internal/shared"
 
 	"github.com/joho/godotenv"
-	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 var (
@@ -24,8 +22,7 @@ var (
 	discordToken string
 	discordBot   *bot.Bot
 
-	mcpUrl     = "http://localhost:8090"
-	mcpSession *mcp.ClientSession
+	mcpServerAddress = ":8090"
 )
 
 func init() {
@@ -50,7 +47,7 @@ func main() {
 	defer dbPool.Close()
 
 	go discordBot.Start()
-	go internalMCP.Start(mcpUrl)
+	go internalMCP.Start(mcpServerAddress)
 
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
@@ -64,24 +61,7 @@ func main() {
 			fmt.Println("Interrupt received, stopping...")
 			fiveMinuteTicker.Stop()
 			discordBot.Stop()
-
-			if mcpSession != nil {
-				mcpSession.Close()
-			}
 			return
 		}
 	}
-}
-
-func connectMCP(ctx context.Context) error {
-	client := mcp.NewClient(&mcp.Implementation{
-		Name:    "bart-tools",
-		Version: "0.0.1",
-	}, nil)
-
-	var err error
-
-	transport := &mcp.StreamableClientTransport{Endpoint: mcpUrl}
-	mcpSession, err = client.Connect(ctx, transport, nil)
-	return err
 }

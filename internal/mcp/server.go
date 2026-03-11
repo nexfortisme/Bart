@@ -57,6 +57,6 @@ func Start(addr string) error {
 	
     // SDK handles the HTTP transport, discovery, routing, and JSON-RPC
     http.Handle("/mcp", handler)
-    log.Println("MCP Server Started On: " + addr + "/mcp")
+    log.Println("MCP Server Started On: " + addr)
     return http.ListenAndServe(addr, nil)
 }
