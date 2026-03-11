@@ -2,16 +2,8 @@ package bot
 
 import (
 	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/bwmarrin/discordgo"
-)
-
-var (
-	bot            *Bot
-	discordSession *discordgo.Session
 )
 
 type Bot struct {
@@ -23,6 +15,8 @@ func NewBot(discordToken string) *Bot {
 	return &Bot{DiscordToken: discordToken}
 }
 
+// Invite Link: https://discord.com/api/v9/oauth2/authorize?client_id= <CLIENT_ID> &permissions=517547084864&scope=bot
+// Will also need to have Message Content Intent enabled in the bot's settings in the Discord Developer Portal.
 func (b *Bot) Start() {
 	var err error
 	b.DiscordSession, err = discordgo.New("Bot " + b.DiscordToken)
@@ -31,7 +25,8 @@ func (b *Bot) Start() {
 		return
 	}
 
-	b.DiscordSession.AddHandler(messageReceive)
+	b.DiscordSession.AddHandler(MessageReceive)
+	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent)
 
 	err = b.DiscordSession.Open()
 	if err != nil {
@@ -40,23 +35,9 @@ func (b *Bot) Start() {
 	}
 
 	fmt.Println("Bot started")
-
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM)
-	<-sc
-
-	// b.Stop()
 }
 
 func (b *Bot) Stop() {
 	_ = b.DiscordSession.Close()
 	fmt.Println("Bot stopped")
-}
-
-func messageReceive(s *discordgo.Session, m *discordgo.MessageCreate) {
-	fmt.Println("Message received:", m.Content)
-
-	if m.Content == "Hi Bart" {
-		s.ChannelMessageSend(m.ChannelID, "Fuck You.")
-	}
 }
