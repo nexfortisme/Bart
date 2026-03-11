@@ -38,7 +38,7 @@ func init() {
 	}
 
 	discordToken = os.Getenv("DISCORD_TOKEN")
-}
+}	
 
 func main() {
 	discordBot = bot.NewBot(os.Getenv("DISCORD_TOKEN"))

@@ -164,6 +164,9 @@ func fetchTools(ctx context.Context) ([]Tool, error) {
 
 	tools := make([]Tool, len(resp.Tools))
 	for i, t := range resp.Tools {
+
+		fmt.Printf("Tool Name: %+v\n", t.Name)
+
 		// t.InputSchema is type any (JSON schema as a generic map) — marshal it
 		// so the OpenAI API receives the schema object it expects.
 		schemaBytes, err := json.Marshal(t.InputSchema)
@@ -245,8 +248,6 @@ func chat(ctx context.Context, userMessage string) (string, error) {
 		tools = nil
 	}
 
-	fmt.Printf("Tools: %+v\n", tools)
-
 	messages := []Message{
 		{Role: "system", Content: fetchSystemPrompt()},
 		{Role: "user", Content: userMessage},
@@ -292,7 +293,8 @@ func chat(ctx context.Context, userMessage string) (string, error) {
 }
 
 func fetchSystemPrompt() string {
-	systemPrompt, err := os.ReadFile("../../resources/system_prompt.md")
+	// Relative to main.go
+	systemPrompt, err := os.ReadFile("./resources/system_prompt.md")
 	if err != nil {
 		return ""
 	}
