@@ -5,8 +5,9 @@ import (
     "log"
     "net/http"
 
-    "github.com/modelcontextprotocol/go-sdk/mcp"
     "github.com/nexfortisme/bart/internal/tools"
+
+    "github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // Typed input structs — the SDK generates JSON schema from these automatically
@@ -28,16 +29,6 @@ func weatherHandler(ctx context.Context, req *mcp.CallToolRequest, in WeatherInp
         Content: []mcp.Content{&mcp.TextContent{Text: result}},
     }, nil, nil
 }
-
-// func searchHandler(ctx context.Context, req *mcp.CallToolRequest, in SearchInput) (*mcp.CallToolResult, any, error) {
-//     result, err := tools.SearchDocs(in.Query)
-//     if err != nil {
-//         return nil, nil, err
-//     }
-//     return &mcp.CallToolResult{
-//         Content: []mcp.Content{&mcp.TextContent{Text: result}},
-//     }, nil, nil
-// }
 
 func Start(addr string) error {
     server := mcp.NewServer(&mcp.Implementation{
