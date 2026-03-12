@@ -43,6 +43,7 @@ type ChatRequest struct {
 	Messages   []Message `json:"messages"`
 	Tools      []Tool    `json:"tools,omitempty"`
 	ToolChoice string    `json:"tool_choice,omitempty"`
+	Stream     bool      `json:"stream,omitempty"`
 }
 
 type ChatResponse struct {
@@ -76,6 +77,12 @@ func MessageReceive(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	result := MessageIntendedForBotScored(m.Content)
+	if !result {
+		fmt.Println("Message not intended for bot")
+		return
+	}
+
 	fmt.Println("Connecting to MCP")
 	err := connectMCP(context.Background())
 	if err != nil {
@@ -83,65 +90,22 @@ func MessageReceive(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	MessageIndendedForBot(m.Content)
+	s.ChannelTyping(m.ChannelID)
+	fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
 
-
-	// if m.Message.Content == "Hi Bart" {
-	// 	s.ChannelMessageSend(m.ChannelID, "Fuck You.")
-	// }
-
-	// // Only respond when @mentioned
-	// mentioned := false
-	// for _, user := range m.Mentions {
-	// 	if user.ID == s.State.User.ID {
-	// 		mentioned = true
-	// 		break
-	// 	}
-	// }
-	// if !mentioned {
-	// 	return
-	// }
-
-	// s.ChannelTyping(m.ChannelID)
-	// fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
-
-	// response, err := chat(context.Background(), m.Content)
-	// if err != nil {
-	// 	fmt.Printf("Error: %v", err)
-	// 	s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
-	// 	return
-	// }
-
-	// // Discord has a 2000 character limit per message
-	// if len(response) > 2000 {
-	// 	response = response[:1997] + "..."
-	// }
-
-	// s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
-}
-
-func formatDiscordMessage(m *discordgo.MessageCreate, guild *discordgo.Guild, guildErr error) string {
-	guildID := m.GuildID
-	guildName := ""
-	if guildErr != nil || guild == nil {
-		guildName = "(unknown guild name)"
-	} else {
-		guildName = guild.Name
+	response, err := chat(context.Background(), m.Content)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
+		return
 	}
 
-	return fmt.Sprintf(
-		"ID=%s, Content=%q, Author=%s#%s (%s), ChannelID=%s, GuildID=%s, GuildName=%s, Mentions=%d, Attachments=%d",
-		m.ID,
-		m.Content,
-		m.Author.Username,
-		m.Author.Discriminator,
-		m.Author.ID,
-		m.ChannelID,
-		guildID,
-		guildName,
-		len(m.Mentions),
-		len(m.Attachments),
-	)
+	// Discord has a 2000 character limit per message
+	if len(response) > 2000 {
+		response = response[:1997] + "..."
+	}
+
+	s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
 }
 
 func connectMCP(ctx context.Context) error {
@@ -214,13 +178,12 @@ func chatCompletion(messages []Message, tools []Tool) (*ChatResponse, error) {
 	}
 
 	body, _ := json.Marshal(req)
-	httpReq, err := http.NewRequest("POST", llmBaseURL+"/chat/completions",
-		bytes.NewBuffer(body))
+	httpReq, err := http.NewRequest("POST", llmBaseURL+"/chat/completions", bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
-	// httpReq.Header.Set("Authorization", "Bearer "+llmAPIKey)
+	// httpReq.Header.Set("Authorization", "Bearer "+llmAPIKey) // Don't need an API key for local LM Studio
 
 	resp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
