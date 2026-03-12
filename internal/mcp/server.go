@@ -1,13 +1,13 @@
 package mcp
 
 import (
-    "context"
-    "log"
-    "net/http"
+	"context"
+	"fmt"
+	"net/http"
 
-    "github.com/nexfortisme/bart/internal/tools"
+	"github.com/nexfortisme/bart/internal/tools"
 
-    "github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
 // Typed input structs — the SDK generates JSON schema from these automatically
@@ -42,12 +42,13 @@ func Start(addr string) error {
         Description: "Get current weather for a city",
     }, weatherHandler)
 
+    // StreamableHTTPHandler is a handler that streams the response from the server to the client
 	handler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {
 		return server
 	}, &mcp.StreamableHTTPOptions{JSONResponse: true})
 	
     // SDK handles the HTTP transport, discovery, routing, and JSON-RPC
     http.Handle("/mcp", handler)
-    log.Println("MCP Server Started On: " + addr)
+    fmt.Println("MCP Server Started On: " + addr)
     return http.ListenAndServe(addr, nil)
 }

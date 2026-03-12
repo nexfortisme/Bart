@@ -1,8 +1,6 @@
 package bot
 
-import "github.com/bwmarrin/discordgo"
-
-func MessageIndendedForBot(m *discordgo.MessageCreate) bool {
+func MessageIndendedForBot(message string) bool {
 
 	return false;
 }

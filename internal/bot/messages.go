@@ -83,8 +83,8 @@ func MessageReceive(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	guild, err := s.State.Guild(m.GuildID)
-	fmt.Printf("Incoming Discord message: %s\n", formatDiscordMessage(m, guild, err))
+	MessageIndendedForBot(m.Content)
+
 
 	// if m.Message.Content == "Hi Bart" {
 	// 	s.ChannelMessageSend(m.ChannelID, "Fuck You.")
