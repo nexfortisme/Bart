@@ -26,7 +26,7 @@ func (b *Bot) Start() {
 	}
 
 	b.DiscordSession.AddHandler(MessageReceive)
-	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent)
+	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds)
 
 	err = b.DiscordSession.Open()
 	if err != nil {

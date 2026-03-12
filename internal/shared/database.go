@@ -123,41 +123,6 @@ func InitializeDatabase(db *sqlite.Conn) {
 		SyncedAt    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);`
 
-	createAttachmentsTable := `
-	CREATE TABLE IF NOT EXISTS Attachments (
-		AttachmentId    TEXT PRIMARY KEY,
-		MessageId       TEXT NOT NULL REFERENCES DiscordMessages(MessageId),
-		Filename        TEXT NOT NULL,
-		Url             TEXT NOT NULL,
-		ContentType     TEXT,
-		SizeBytes       INTEGER,
-		Width           INTEGER,
-		Height          INTEGER
-	);`
-
-	createEmbedsTable := `
-	CREATE TABLE IF NOT EXISTS Embeds (
-		ID              INTEGER PRIMARY KEY AUTOINCREMENT,
-		MessageId       TEXT NOT NULL REFERENCES DiscordMessages(MessageId),
-		Type            TEXT,
-		Title           TEXT,
-		Description     TEXT,
-		Url             TEXT,
-		Color           INTEGER,
-		Footer          TEXT,
-		ImageUrl        TEXT,
-		ThumbnailUrl    TEXT
-	);`
-
-	createReactionsTable := `
-	CREATE TABLE IF NOT EXISTS Reactions (
-		ID          INTEGER PRIMARY KEY AUTOINCREMENT,
-		MessageId   TEXT NOT NULL REFERENCES DiscordMessages(MessageId),
-		Emoji       TEXT NOT NULL,
-		Count       INTEGER NOT NULL DEFAULT 0,
-		UpdatedAt   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-	);`
-
 	createDiscordMessagesChannelIndex := `
 	CREATE INDEX IF NOT EXISTS idx_discord_messages_channel
 	ON DiscordMessages(ChannelId, CreatedAt DESC);`
@@ -178,30 +143,17 @@ func InitializeDatabase(db *sqlite.Conn) {
 	CREATE INDEX IF NOT EXISTS idx_discord_messages_deleted
 	ON DiscordMessages(DeletedAt) WHERE DeletedAt IS NOT NULL;`
 
-	createAttachmentsMessageIndex := `
-	CREATE INDEX IF NOT EXISTS idx_attachments_message
-	ON Attachments(MessageId);`
-
-	createReactionsMessageIndex := `
-	CREATE INDEX IF NOT EXISTS idx_reactions_message
-	ON Reactions(MessageId);`
-
 	tables := []string{
 		createGuildsTable,
 		createChannelsTable,
 		createDiscordUsersTable,
 		createDiscordMembersTable,
 		createDiscordMessagesTable,
-		createAttachmentsTable,
-		createEmbedsTable,
-		createReactionsTable,
 		createDiscordMessagesChannelIndex,
 		createDiscordMessagesUserIndex,
 		createDiscordMessagesGuildIndex,
 		createDiscordMessagesReplyIndex,
 		createDiscordMessagesDeletedIndex,
-		createAttachmentsMessageIndex,
-		createReactionsMessageIndex,
 	}
 
 	for _, table := range tables {

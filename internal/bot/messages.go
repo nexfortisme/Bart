@@ -83,41 +83,65 @@ func MessageReceive(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	// fmt.Printf("Message received: %+v\n", m)
-	fmt.Printf("Message Content: %v\n", m.Message.Content)
+	guild, err := s.State.Guild(m.GuildID)
+	fmt.Printf("Incoming Discord message: %s\n", formatDiscordMessage(m, guild, err))
 
 	// if m.Message.Content == "Hi Bart" {
 	// 	s.ChannelMessageSend(m.ChannelID, "Fuck You.")
 	// }
 
-	// Only respond when @mentioned
-	mentioned := false
-	for _, user := range m.Mentions {
-		if user.ID == s.State.User.ID {
-			mentioned = true
-			break
-		}
-	}
-	if !mentioned {
-		return
+	// // Only respond when @mentioned
+	// mentioned := false
+	// for _, user := range m.Mentions {
+	// 	if user.ID == s.State.User.ID {
+	// 		mentioned = true
+	// 		break
+	// 	}
+	// }
+	// if !mentioned {
+	// 	return
+	// }
+
+	// s.ChannelTyping(m.ChannelID)
+	// fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
+
+	// response, err := chat(context.Background(), m.Content)
+	// if err != nil {
+	// 	fmt.Printf("Error: %v", err)
+	// 	s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
+	// 	return
+	// }
+
+	// // Discord has a 2000 character limit per message
+	// if len(response) > 2000 {
+	// 	response = response[:1997] + "..."
+	// }
+
+	// s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
+}
+
+func formatDiscordMessage(m *discordgo.MessageCreate, guild *discordgo.Guild, guildErr error) string {
+	guildID := m.GuildID
+	guildName := ""
+	if guildErr != nil || guild == nil {
+		guildName = "(unknown guild name)"
+	} else {
+		guildName = guild.Name
 	}
 
-	s.ChannelTyping(m.ChannelID)
-	fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
-
-	response, err := chat(context.Background(), m.Content)
-	if err != nil {
-		fmt.Printf("Error: %v", err)
-		s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
-		return
-	}
-
-	// Discord has a 2000 character limit per message
-	if len(response) > 2000 {
-		response = response[:1997] + "..."
-	}
-
-	s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
+	return fmt.Sprintf(
+		"ID=%s, Content=%q, Author=%s#%s (%s), ChannelID=%s, GuildID=%s, GuildName=%s, Mentions=%d, Attachments=%d",
+		m.ID,
+		m.Content,
+		m.Author.Username,
+		m.Author.Discriminator,
+		m.Author.ID,
+		m.ChannelID,
+		guildID,
+		guildName,
+		len(m.Mentions),
+		len(m.Attachments),
+	)
 }
 
 func connectMCP(ctx context.Context) error {
