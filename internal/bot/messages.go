@@ -31,11 +31,11 @@ func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m 
 			return
 		}
 
-		s.ChannelTyping(m.ChannelID)
+		// s.ChannelTyping(m.ChannelID)
 
 		result := MessageIntendedForBartClassifier(m.Content, store)
 
-		s.ChannelMessageSendReply(m.ChannelID, result, m.Reference())
+		// s.ChannelMessageSendReply(m.ChannelID, result, m.Reference())
 
 		// if !result {
 		// 	fmt.Println("Message not intended for bot")
