@@ -13,57 +13,9 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-type Message struct {
-	Role       string     `json:"role"`
-	Content    any        `json:"content"` // string or null
-	ToolCalls  []ToolCall `json:"tool_calls,omitempty"`
-	ToolCallID string     `json:"tool_call_id,omitempty"`
-}
-
-type ToolCall struct {
-	ID       string `json:"id"`
-	Type     string `json:"type"`
-	Function struct {
-		Name      string `json:"name"`
-		Arguments string `json:"arguments"` // JSON string, not object
-	} `json:"function"`
-}
-
-type Tool struct {
-	Type     string `json:"type"`
-	Function struct {
-		Name        string          `json:"name"`
-		Description string          `json:"description"`
-		Parameters  json.RawMessage `json:"parameters"`
-	} `json:"function"`
-}
-
-type ChatRequest struct {
-	Model      string    `json:"model"`
-	Messages   []Message `json:"messages"`
-	Tools      []Tool    `json:"tools,omitempty"`
-	ToolChoice string    `json:"tool_choice,omitempty"`
-	Stream     bool      `json:"stream,omitempty"`
-}
-
-type ChatResponse struct {
-	Choices []struct {
-		Message      Message `json:"message"`
-		FinishReason string  `json:"finish_reason"`
-	} `json:"choices"`
-}
-
 var (
-	llmModel   = "qwen/qwen3.5-9b"
-	llmBaseURL = "http://127.0.0.1:1234/v1" // LM Studio
-
-	mcpUrl     = "http://localhost:8090/mcp"
 	mcpSession *mcp.ClientSession
 )
-
-func init() {
-
-}
 
 func MessageReceive(s *discordgo.Session, m *discordgo.MessageCreate) {
 
@@ -114,7 +66,7 @@ func connectMCP(ctx context.Context) error {
 		Version: "0.0.1",
 	}, nil)
 
-	transport := &mcp.StreamableClientTransport{Endpoint: mcpUrl}
+	transport := &mcp.StreamableClientTransport{Endpoint: os.Getenv("MCP_URL")}
 	var err error
 	mcpSession, err = client.Connect(ctx, transport, nil)
 	return err
@@ -169,7 +121,7 @@ func callTool(ctx context.Context, name string, argsJSON string) (string, error)
 
 func chatCompletion(messages []Message, tools []Tool) (*ChatResponse, error) {
 	req := ChatRequest{
-		Model:    llmModel,
+		Model:    os.Getenv("LLM_MODEL"),
 		Messages: messages,
 		Tools:    tools,
 	}
@@ -178,7 +130,7 @@ func chatCompletion(messages []Message, tools []Tool) (*ChatResponse, error) {
 	}
 
 	body, _ := json.Marshal(req)
-	httpReq, err := http.NewRequest("POST", llmBaseURL+"/chat/completions", bytes.NewBuffer(body))
+	httpReq, err := http.NewRequest("POST", os.Getenv("LLM_BASE_URL") + "/chat/completions", bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
