@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/nexfortisme/bart/internal/backfill"
 	"github.com/nexfortisme/bart/internal/bot"
 	"github.com/nexfortisme/bart/internal/classifier"
 	internalMCP "github.com/nexfortisme/bart/internal/mcp"
@@ -23,7 +25,9 @@ var (
 
 	discordBot *bot.Bot
 
-	seedEmbeddings bool
+	seedEmbeddings  bool
+	backfillChannel string
+	backfillLimit   int
 )
 
 // Mostly for loading the .env file
@@ -58,6 +62,8 @@ func main() {
 
 	// -- Command Line Arguments --
 	flag.BoolVar(&seedEmbeddings, "seed", false, "Seed embeddings into the database")
+	flag.StringVar(&backfillChannel, "backfill-channel", "", "Backfill a Discord channel into SQLite for classifier backtesting")
+	flag.IntVar(&backfillLimit, "backfill-limit", -1, "Maximum number of messages to backfill; use -1 for all accessible messages")
 	flag.Parse()
 
 	// -- Seeding Embeddings --
@@ -66,6 +72,17 @@ func main() {
 		fmt.Println("Seeding embeddings into the database...")
 		classifier.SeedEmbeddingsDataset()
 		fmt.Println("Embeddings seeded into the database")
+		return
+	}
+
+	if backfillChannel != "" {
+		if err := backfill.BackfillChannel(context.Background(), os.Getenv("DISCORD_TOKEN"), backfill.ChannelBackfillOptions{
+			ChannelID: backfillChannel,
+			Limit:     backfillLimit,
+		}); err != nil {
+			fmt.Printf("Error backfilling channel: %v\n", err)
+			os.Exit(1)
+		}
 		return
 	}
 

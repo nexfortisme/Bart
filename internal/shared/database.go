@@ -143,6 +143,33 @@ func InitializeDatabase(db *sqlite.Conn) {
 	CREATE INDEX IF NOT EXISTS idx_discord_messages_deleted
 	ON DiscordMessages(DeletedAt) WHERE DeletedAt IS NOT NULL;`
 
+	createClassifierBacktestMessagesTable := `
+	CREATE TABLE IF NOT EXISTS ClassifierBacktestMessages (
+		MessageId             TEXT PRIMARY KEY,
+		ChannelId             TEXT NOT NULL,
+		GuildId               TEXT,
+		ThreadId              TEXT,
+		Content               TEXT NOT NULL DEFAULT '',
+		AuthorIsBot           BOOLEAN NOT NULL DEFAULT 0,
+		MessageType           INTEGER NOT NULL DEFAULT 0,
+		ClassifierIntent      TEXT NOT NULL,
+		ClassifierConfidence  REAL NOT NULL DEFAULT 0,
+		ClassifierTopMatches  TEXT NOT NULL DEFAULT '[]',
+		CreatedAt             DATETIME NOT NULL,
+		ClassifierVersion     TEXT NOT NULL,
+		ClassifierThreshold   REAL NOT NULL DEFAULT 0,
+		ClassifiedAt          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		SyncedAt              DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);`
+
+	createClassifierBacktestMessagesChannelIndex := `
+	CREATE INDEX IF NOT EXISTS idx_classifier_backtest_messages_channel
+	ON ClassifierBacktestMessages(ChannelId, CreatedAt DESC);`
+
+	createClassifierBacktestMessagesIntentIndex := `
+	CREATE INDEX IF NOT EXISTS idx_classifier_backtest_messages_intent
+	ON ClassifierBacktestMessages(ClassifierIntent, CreatedAt DESC);`
+
 	tables := []string{
 		createGuildsTable,
 		createChannelsTable,
@@ -154,6 +181,9 @@ func InitializeDatabase(db *sqlite.Conn) {
 		createDiscordMessagesGuildIndex,
 		createDiscordMessagesReplyIndex,
 		createDiscordMessagesDeletedIndex,
+		createClassifierBacktestMessagesTable,
+		createClassifierBacktestMessagesChannelIndex,
+		createClassifierBacktestMessagesIntentIndex,
 	}
 
 	for _, table := range tables {
