@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/nexfortisme/bart/internal/bot"
-	"github.com/nexfortisme/bart/internal/classifier"
+	// "github.com/nexfortisme/bart/internal/classifier"
 	internalMCP "github.com/nexfortisme/bart/internal/mcp"
 	"github.com/nexfortisme/bart/internal/shared"
 
@@ -41,17 +41,17 @@ func init() {
 
 	// -- Variables Set --
 	fmt.Println("\nSecrets Set:")
-	fmt.Println("Discord Token Set: \t", os.Getenv("DISCORD_TOKEN") != "", "\n")
+	fmt.Printf("Discord Token Set: \t %t\n\n", os.Getenv("DISCORD_TOKEN") != "")
 
 	fmt.Println("Models Set:")
 	fmt.Println("LLM Model Set: \t\t", os.Getenv("LLM_MODEL") != "")
-	fmt.Println("Embeddings Model Set: \t", os.Getenv("EMBEDDING_MODEL") != "", "\n")
+	fmt.Printf("Embeddings Model Set: \t %t\n\n", os.Getenv("EMBEDDING_MODEL") != "")
 
 	fmt.Println("Base URLs Set:")
 	fmt.Println("LLM Base URL Set: \t", os.Getenv("LLM_BASE_URL") != "")
 	fmt.Println("MCP Server Address Set: ", os.Getenv("MCP_SERVER_ADDRESS") != "")
 	fmt.Println("MCP URL Set: \t\t", os.Getenv("MCP_URL") != "")
-	fmt.Println("--------------------------------\n")
+	fmt.Printf("--------------------------------\n")
 }
 
 func main() {
@@ -64,7 +64,7 @@ func main() {
 	// One off operation to be completed separate from normal operation
 	if seedEmbeddings {
 		fmt.Println("Seeding embeddings into the database...")
-		classifier.SeedEmbeddingsDataset()
+		// classifier.SeedEmbeddingsDataset()
 		fmt.Println("Embeddings seeded into the database")
 		return
 	}
