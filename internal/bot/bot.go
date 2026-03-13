@@ -4,11 +4,17 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/nexfortisme/bart/internal/classifier"
+)
+
+var (
+	storePath = "resources/classifier/store.json"
 )
 
 type Bot struct {
-	DiscordToken   string
-	DiscordSession *discordgo.Session
+	DiscordToken    string
+	DiscordSession  *discordgo.Session
+	ClassifierStore *classifier.MemoryStore
 }
 
 func NewBot(discordToken string) *Bot {
@@ -25,7 +31,10 @@ func (b *Bot) Start() {
 		return
 	}
 
-	b.DiscordSession.AddHandler(MessageReceive)
+	b.ClassifierStore = classifier.NewStore()
+	b.ClassifierStore.Load(storePath)
+
+	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStore))
 	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds)
 
 	err = b.DiscordSession.Open()

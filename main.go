@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/nexfortisme/bart/internal/bot"
-	// "github.com/nexfortisme/bart/internal/classifier"
+	"github.com/nexfortisme/bart/internal/classifier"
 	internalMCP "github.com/nexfortisme/bart/internal/mcp"
 	"github.com/nexfortisme/bart/internal/shared"
 
@@ -64,7 +64,7 @@ func main() {
 	// One off operation to be completed separate from normal operation
 	if seedEmbeddings {
 		fmt.Println("Seeding embeddings into the database...")
-		// classifier.SeedEmbeddingsDataset()
+		classifier.SeedEmbeddingsDataset()
 		fmt.Println("Embeddings seeded into the database")
 		return
 	}

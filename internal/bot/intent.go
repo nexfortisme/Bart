@@ -1,7 +1,10 @@
 package bot
 
 import (
+	"os"
 	"strings"
+
+	"github.com/nexfortisme/bart/internal/classifier"
 )
 
 // Super Basic Slop Job From Codex. Should probably be improved with RAG or something like that.
@@ -91,4 +94,13 @@ func MessageIntendedForBotScored(message string) bool {
 	}
 
 	return score >= 2
+}
+
+func MessageIntendedForBartClassifier(message string, store *classifier.MemoryStore) string {
+	result, err := classifier.NewClassifier(classifier.NewLMStudioEmbedder(os.Getenv("LLM_BASE_URL"), os.Getenv("EMBEDDING_MODEL")), store).Classify(message)
+	if err != nil {
+		return ""
+	}
+
+	return result.Intent
 }

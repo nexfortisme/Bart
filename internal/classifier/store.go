@@ -54,6 +54,7 @@ func (s *MemoryStore) Save(path string) error {
 
 // TODO: Replace with SQLite
 func (s *MemoryStore) Load(path string) error {
+	fmt.Println("Loading store from", path)
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("read store file: %w", err)
@@ -77,6 +78,7 @@ func (s *MemoryStore) Load(path string) error {
 		}
 	}
 
+	fmt.Println("Loaded", len(s.entries), "entries from", path)
 	return nil
 }
 

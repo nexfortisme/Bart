@@ -11,53 +11,61 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/nexfortisme/bart/internal/classifier"
 )
 
 var (
 	mcpSession *mcp.ClientSession
 )
 
-func MessageReceive(s *discordgo.Session, m *discordgo.MessageCreate) {
+func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m *discordgo.MessageCreate) {
+	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-	// Ignoring messages from self
-	if m.Author.ID == s.State.User.ID {
-		fmt.Println("Ignoring message from self")
-		return
+		// Ignoring messages from self
+		if m.Author.ID == s.State.User.ID {
+			fmt.Println("Ignoring message from self")
+			return
+		}
+		if m.Author.Bot {
+			fmt.Println("Ignoring message from bot")
+			return
+		}
+
+		s.ChannelTyping(m.ChannelID)
+
+		result := MessageIntendedForBartClassifier(m.Content, store)
+
+		s.ChannelMessageSendReply(m.ChannelID, result, m.Reference())
+
+		// if !result {
+		// 	fmt.Println("Message not intended for bot")
+		// 	return
+		// }
+
+		// fmt.Println("Connecting to MCP")
+		// err := connectMCP(context.Background())
+		// if err != nil {
+		// 	fmt.Printf("Error connecting to MCP: %v", err)
+		// 	return
+		// }
+
+		// s.ChannelTyping(m.ChannelID)
+		// fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
+
+		// response, err := chat(context.Background(), m.Content)
+		// if err != nil {
+		// 	fmt.Printf("Error: %v", err)
+		// 	s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
+		// 	return
+		// }
+
+		// // Discord has a 2000 character limit per message
+		// if len(response) > 2000 {
+		// 	response = response[:1997] + "..."
+		// }
+
+		// s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
 	}
-	if m.Author.Bot {
-		fmt.Println("Ignoring message from bot")
-		return
-	}
-
-	result := MessageIntendedForBotScored(m.Content)
-	if !result {
-		fmt.Println("Message not intended for bot")
-		return
-	}
-
-	fmt.Println("Connecting to MCP")
-	err := connectMCP(context.Background())
-	if err != nil {
-		fmt.Printf("Error connecting to MCP: %v", err)
-		return
-	}
-
-	s.ChannelTyping(m.ChannelID)
-	fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
-
-	response, err := chat(context.Background(), m.Content)
-	if err != nil {
-		fmt.Printf("Error: %v", err)
-		s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
-		return
-	}
-
-	// Discord has a 2000 character limit per message
-	if len(response) > 2000 {
-		response = response[:1997] + "..."
-	}
-
-	s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
 }
 
 func connectMCP(ctx context.Context) error {
@@ -130,7 +138,7 @@ func chatCompletion(messages []Message, tools []Tool) (*ChatResponse, error) {
 	}
 
 	body, _ := json.Marshal(req)
-	httpReq, err := http.NewRequest("POST", os.Getenv("LLM_BASE_URL") + "/chat/completions", bytes.NewBuffer(body))
+	httpReq, err := http.NewRequest("POST", os.Getenv("LLM_BASE_URL")+"/chat/completions", bytes.NewBuffer(body))
 	if err != nil {
 		return nil, err
 	}
