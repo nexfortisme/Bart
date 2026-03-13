@@ -3,4 +3,6 @@
 
 store.json
 
+*.sqlite
+
 .claude/worktrees/
