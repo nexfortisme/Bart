@@ -34,6 +34,7 @@ func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m 
 		// s.ChannelTyping(m.ChannelID)
 
 		result := MessageIntendedForBartClassifier(m.Content, store)
+		fmt.Println("Result:", result)
 
 		// s.ChannelMessageSendReply(m.ChannelID, result, m.Reference())
 
