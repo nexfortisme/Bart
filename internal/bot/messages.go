@@ -31,10 +31,10 @@ func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m 
 			return
 		}
 
-		// s.ChannelTyping(m.ChannelID)
+		s.ChannelTyping(m.ChannelID)
 
-		result := MessageIntendedForBartClassifier(m.Content, store)
-		fmt.Println("Result:", result)
+		// result := MessageIntendedForBartClassifier(m.Content, store)
+		// fmt.Println("Result:", result)
 
 		// s.ChannelMessageSendReply(m.ChannelID, result, m.Reference())
 
@@ -43,29 +43,29 @@ func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m 
 		// 	return
 		// }
 
-		// fmt.Println("Connecting to MCP")
-		// err := connectMCP(context.Background())
-		// if err != nil {
-		// 	fmt.Printf("Error connecting to MCP: %v", err)
-		// 	return
-		// }
+		fmt.Println("Connecting to MCP")
+		err := connectMCP(context.Background())
+		if err != nil {
+			fmt.Printf("Error connecting to MCP: %v", err)
+			return
+		}
 
-		// s.ChannelTyping(m.ChannelID)
-		// fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
+		s.ChannelTyping(m.ChannelID)
+		fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
 
-		// response, err := chat(context.Background(), m.Content)
-		// if err != nil {
-		// 	fmt.Printf("Error: %v", err)
-		// 	s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
-		// 	return
-		// }
+		response, err := chat(context.Background(), m.Content)
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
+			return
+		}
 
-		// // Discord has a 2000 character limit per message
-		// if len(response) > 2000 {
-		// 	response = response[:1997] + "..."
-		// }
+		// Discord has a 2000 character limit per message
+		if len(response) > 2000 {
+			response = response[:1997] + "..."
+		}
 
-		// s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
+		s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
 	}
 }
 
@@ -204,7 +204,7 @@ func chat(ctx context.Context, userMessage string) (string, error) {
 			if err != nil {
 				result = fmt.Sprintf(`{"error": "%s"}`, err.Error())
 			}
-			fmt.Printf("Tool called: %s → %s", tc.Function.Name, result)
+			// fmt.Printf("Tool called: %s → %s", tc.Function.Name, result)
 
 			messages = append(messages, Message{
 				Role:       "tool",

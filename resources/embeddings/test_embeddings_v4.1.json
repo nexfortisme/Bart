@@ -1,0 +1,1313 @@
+{
+  "metadata": {
+    "description": "Chatbot interaction intent dataset including all original examples from the initial generation.",
+    "version": "3.2",
+    "total_examples": 100,
+    "counts": {
+      "positive": 50,
+      "negative": 50
+    }
+  },
+  "examples": [
+    {
+      "id": 1,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Hey Bart",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart, can you help me?",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Hey Bart, what's the weather?",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart what time is it",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart tell me a joke",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart can you explain this",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart, give me the server status",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart what do you do",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart can you look this up",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Hey Bart can you run that again",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart help me debug this",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart give me a summary",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart explain goroutines",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart run the command again",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart what\u2019s the latest news",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart are you online",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart respond if you're here",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart can you check this file",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart generate an image",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart what\u2019s the uptime",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart help me write some code",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart explain this error",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart check the logs",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart tell me something interesting",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Hey Bart can you help me out",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart please respond",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart can you assist me",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart give me the time",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart what\u2019s going on",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart summarize this",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart help",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart answer this question",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart generate a response",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart check the database",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart tell me a fact",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart give me the output",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart what\u2019s the result",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart process this message",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart can you interpret this",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart help me understand this",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart analyze this data",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart do you know the answer",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart respond",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart can you solve this",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart explain the command",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart run a search",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart help with Go code",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart parse this JSON",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "type": "positive",
+      "bot_addressed": true,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Bart check the API",
+          "intent": "positive",
+          "notes": "Direct bot invocation or request"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I think the server might be down",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Did anyone restart the container",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The logs are showing a timeout",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I ran the command and it failed",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Does anyone know the fix for this",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I pushed a commit earlier",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "That game was actually pretty fun",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The weather is nice today",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I'm heading out for lunch",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Did you see the news today",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "That bug took forever to track down",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The build pipeline is slow today",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I finally finished the feature",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The test suite is failing again",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I\u2019m not sure why the API is slow",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The docker container keeps restarting",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I tried rebooting the server",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The deployment worked this time",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "That error message is confusing",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I think the config file is wrong",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 71,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The code compiled successfully",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "We should probably refactor that",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 73,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I pushed another commit",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "Let me check the logs",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The latency seems high",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I'm testing a new feature",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The update broke something",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "That repository is archived",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The database migration failed",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I ran the test locally",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The container image is large",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 82,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The pipeline finished running",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 83,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "We should add better logging",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The network seems slow today",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 85,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The server restarted overnight",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 86,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I think the cache is stale",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 87,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The query took too long",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The UI looks good now",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 89,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "That script works perfectly",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 90,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The config change fixed it",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 91,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "I'll investigate the issue",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 92,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "We should add more monitoring",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The CPU usage is high",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "That process is stuck",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 95,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The disk space is running low",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 96,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The app crashed again",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 97,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The port might already be in use",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 98,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The response time is inconsistent",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 99,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The metrics look normal",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    },
+    {
+      "id": 100,
+      "type": "negative",
+      "bot_addressed": false,
+      "messages": [
+        {
+          "turn": 1,
+          "text": "The update just finished",
+          "intent": "negative",
+          "notes": "General conversation not directed at the bot"
+        }
+      ]
+    }
+  ]
+}
