@@ -127,9 +127,15 @@ func scanStruct(stmt *sqlite.Stmt, v reflect.Value) error {
 
 		case reflect.Struct:
 			if fieldType.Type == reflect.TypeOf(time.Time{}) {
-				parsed, err := time.Parse(time.RFC3339, stmt.ColumnText(i))
+				raw := stmt.ColumnText(i)
+				// SQLite commonly stores datetime as "YYYY-MM-DD HH:MM:SS" (no timezone, no 'T'),
+				// while others may store RFC3339. Try both.
+				parsed, err := time.Parse(time.RFC3339, raw)
 				if err != nil {
-					return fmt.Errorf("error parsing time for field %s: %w", fieldType.Name, err)
+					parsed, err = time.ParseInLocation("2006-01-02 15:04:05", raw, time.UTC)
+					if err != nil {
+						return fmt.Errorf("error parsing time for field %s: %w (raw=%q)", fieldType.Name, err, raw)
+					}
 				}
 				field.Set(reflect.ValueOf(parsed))
 			} else {
@@ -143,9 +149,13 @@ func scanStruct(stmt *sqlite.Stmt, v reflect.Value) error {
 				s := stmt.ColumnText(i)
 				field.Set(reflect.ValueOf(&s))
 			} else if fieldType.Type == reflect.TypeOf((*time.Time)(nil)) {
-				parsed, err := time.Parse(time.RFC3339, stmt.ColumnText(i))
+				raw := stmt.ColumnText(i)
+				parsed, err := time.Parse(time.RFC3339, raw)
 				if err != nil {
-					return fmt.Errorf("error parsing time for field %s: %w", fieldType.Name, err)
+					parsed, err = time.ParseInLocation("2006-01-02 15:04:05", raw, time.UTC)
+					if err != nil {
+						return fmt.Errorf("error parsing time for field %s: %w (raw=%q)", fieldType.Name, err, raw)
+					}
 				}
 				field.Set(reflect.ValueOf(&parsed))
 			} else {

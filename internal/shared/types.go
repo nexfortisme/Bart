@@ -22,14 +22,14 @@ type Channel struct {
 }
 
 type DiscordUser struct {
-	DiscordUserId string
-	Username      string
-	DisplayName   *string
-	Discriminator *string
-	AvatarUrl     *string
-	IsBot         bool
-	CreatedAt     time.Time
-	SyncedAt      time.Time
+	DiscordUserId      string
+	Username           string
+	Discriminator      string
+	IsBot              bool
+	DataUsageConsent   bool
+	DataUsageConsentAt time.Time
+	CreatedAt          time.Time
+	SyncedAt           time.Time
 }
 
 type Member struct {

@@ -89,11 +89,11 @@ func InitializeDatabase(db *sqlite.Conn) {
 	CREATE TABLE IF NOT EXISTS DiscordUsers (
 		DiscordUserId   TEXT PRIMARY KEY,
 		Username        TEXT NOT NULL,
-		DisplayName     TEXT,
 		Discriminator   TEXT,
-		AvatarUrl       TEXT,
 		IsBot           BOOLEAN NOT NULL DEFAULT 0,
-		CreatedAt       DATETIME NOT NULL,
+		DataUsageConsent BOOLEAN NOT NULL DEFAULT 0,
+		DataUsageConsentAt DATETIME,
+		CreatedAt       DATETIME NOT NULL,	
 		SyncedAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);`
 
