@@ -10,6 +10,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -22,6 +23,8 @@ var (
 
 func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) func(s *discordgo.Session, m *discordgo.MessageCreate) {
 	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
+
+		start := time.Now()
 
 		// Ignoring messages from self
 		if m.Author.ID == s.State.User.ID {
@@ -59,9 +62,9 @@ func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) f
 		}
 
 		s.ChannelTyping(m.ChannelID)
-		fmt.Printf("Message from %s: %s", m.Author.Username, m.Content)
+		fmt.Printf("Message from %s: %s", m.Author.Username, strings.Trim(m.Content, devModeInvokeString))
 
-		response, err := chat(context.Background(), m.Content)
+		response, err := chat(context.Background(), strings.Trim(m.Content, devModeInvokeString))
 		if err != nil {
 			fmt.Printf("Error: %v", err)
 			s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
@@ -76,6 +79,9 @@ func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) f
 		}
 
 		s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
+
+		duration := time.Since(start)
+		fmt.Printf("Handled message from %s in %s\n", m.Author.Username, duration)
 	}
 }
 
@@ -128,11 +134,12 @@ func fetchTools(ctx context.Context) ([]Tool, error) {
 }
 
 func callTool(ctx context.Context, name string, argsJSON string) (string, error) {
-	fmt.Printf("\nCalling Tool: %s\n", name)
 	var args map[string]any
 	if err := json.Unmarshal([]byte(argsJSON), &args); err != nil {
 		return "", fmt.Errorf("invalid tool arguments: %w", err)
 	}
+
+	fmt.Printf("\nCalling Tool: %s with args: %+v\n", name, args)
 
 	result, err := mcpSession.CallTool(ctx, &mcp.CallToolParams{
 		Name:      name,
