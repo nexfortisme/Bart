@@ -1,8 +1,6 @@
 package commands
 
 import (
-	"fmt"
-
 	"github.com/bwmarrin/discordgo"
 	"github.com/nexfortisme/bart/internal/shared"
 )
