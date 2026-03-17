@@ -226,7 +226,6 @@ func chat(ctx context.Context, userMessage string) (string, error) {
 			if err != nil {
 				result = fmt.Sprintf(`{"error": "%s"}`, err.Error())
 			}
-			// fmt.Printf("Tool called: %s → %s", tc.Function.Name, result)
 
 			messages = append(messages, Message{
 				Role:       "tool",
@@ -240,7 +239,7 @@ func chat(ctx context.Context, userMessage string) (string, error) {
 
 func fetchSystemPrompt() string {
 	// Relative to main.go
-	systemPrompt, err := os.ReadFile("./resources/system_prompt.md")
+	systemPrompt, err := os.ReadFile("./resources/prompts/system_prompt.md")
 	if err != nil {
 		return ""
 	}
