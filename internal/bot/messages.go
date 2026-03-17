@@ -8,6 +8,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"regexp"
+	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -18,7 +20,7 @@ var (
 	mcpSession *mcp.ClientSession
 )
 
-func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m *discordgo.MessageCreate) {
+func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) func(s *discordgo.Session, m *discordgo.MessageCreate) {
 	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		// Ignoring messages from self
@@ -31,10 +33,10 @@ func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m 
 			return
 		}
 
-		s.ChannelTyping(m.ChannelID)
+		// s.ChannelTyping(m.ChannelID)
 
-		// result := MessageIntendedForBartClassifier(m.Content, store)
-		// fmt.Println("Result:", result)
+		result := MessageIntendedForBartClassifier(m.Content, store)
+		fmt.Println("Result:", result)
 
 		// s.ChannelMessageSendReply(m.ChannelID, result, m.Reference())
 
@@ -42,6 +44,12 @@ func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m 
 		// 	fmt.Println("Message not intended for bot")
 		// 	return
 		// }
+
+		// If message doesn't start with "test_message", return
+		// Just for testing purposes
+		if !strings.HasPrefix(m.Content, devModeInvokeString) {
+			return
+		}
 
 		fmt.Println("Connecting to MCP")
 		err := connectMCP(context.Background())
@@ -59,6 +67,8 @@ func MessageReceive(store *classifier.MemoryStore) func(s *discordgo.Session, m 
 			s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
 			return
 		}
+
+		response = stripThinking(response)
 
 		// Discord has a 2000 character limit per message
 		if len(response) > 2000 {
@@ -90,7 +100,7 @@ func fetchTools(ctx context.Context) ([]Tool, error) {
 	tools := make([]Tool, len(resp.Tools))
 	for i, t := range resp.Tools {
 
-		fmt.Printf("Tool Name: %+v\n", t.Name)
+		// fmt.Printf("\nTool Name: %+v\n", t.Name)
 
 		// t.InputSchema is type any (JSON schema as a generic map) — marshal it
 		// so the OpenAI API receives the schema object it expects.
@@ -98,6 +108,17 @@ func fetchTools(ctx context.Context) ([]Tool, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to marshal schema for tool %s: %w", t.Name, err)
 		}
+
+		// OpenAI-compatible APIs require "properties" to always be present.
+		// The MCP SDK may omit it for tools with no inputs.
+		var schemaMap map[string]any
+		if err := json.Unmarshal(schemaBytes, &schemaMap); err != nil || schemaMap == nil {
+			schemaMap = map[string]any{"type": "object", "properties": map[string]any{}}
+		} else if _, ok := schemaMap["properties"]; !ok {
+			schemaMap["properties"] = map[string]any{}
+		}
+		schemaBytes, _ = json.Marshal(schemaMap)
+
 		tools[i].Type = "function"
 		tools[i].Function.Name = t.Name
 		tools[i].Function.Description = t.Description
@@ -107,6 +128,7 @@ func fetchTools(ctx context.Context) ([]Tool, error) {
 }
 
 func callTool(ctx context.Context, name string, argsJSON string) (string, error) {
+	fmt.Printf("\nCalling Tool: %s\n", name)
 	var args map[string]any
 	if err := json.Unmarshal([]byte(argsJSON), &args); err != nil {
 		return "", fmt.Errorf("invalid tool arguments: %w", err)
@@ -223,4 +245,10 @@ func fetchSystemPrompt() string {
 		return ""
 	}
 	return string(systemPrompt)
+}
+
+// StripThinking removes all <think>...</think> blocks from a string.
+func stripThinking(input string) string {
+	re := regexp.MustCompile(`(?s)<think>.*?</think>`)
+	return re.ReplaceAllString(input, "")
 }

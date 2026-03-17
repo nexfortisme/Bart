@@ -23,7 +23,8 @@ type datasetMessage struct {
 }
 
 var (
-	pathToExamples = "resources/embeddings/test_embeddings_chatbot_interaction_dataset_v4_discord_noisy.json"
+	// pathToExamples = "resources/embeddings/test_embeddings_chatbot_interaction_dataset_v4_discord_noisy.json"
+	pathToExamples = "resources/embeddings/test_embeddings_v4.1.json"
 )
 
 func SeedEmbeddingsDataset() {

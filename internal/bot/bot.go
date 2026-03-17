@@ -15,10 +15,15 @@ type Bot struct {
 	DiscordToken    string
 	DiscordSession  *discordgo.Session
 	ClassifierStore *classifier.MemoryStore
+	DevModeInvokeString string
 }
 
 func NewBot(discordToken string) *Bot {
-	return &Bot{DiscordToken: discordToken}
+	return &Bot{DiscordToken: discordToken, DevModeInvokeString: ""}
+}
+
+func (b *Bot) SetDevModeInvokeString(invokeString string) {
+	b.DevModeInvokeString = invokeString
 }
 
 // Invite Link: https://discord.com/api/v9/oauth2/authorize?client_id= <CLIENT_ID> &permissions=517547084864&scope=bot
@@ -34,7 +39,7 @@ func (b *Bot) Start() {
 	b.ClassifierStore = classifier.NewStore()
 	b.ClassifierStore.Load(storePath)
 
-	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStore))
+	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStore, b.DevModeInvokeString))
 	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds)
 
 	err = b.DiscordSession.Open()

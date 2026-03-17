@@ -23,6 +23,9 @@ type FetchInput struct {
     URL string `json:"url" jsonschema:"the URL of the web page to fetch"`
 }
 
+type CurrentTimeInput struct{}
+
+
 // Tool handlers — strongly typed, no map[string]any parsing
 func weatherHandler(ctx context.Context, req *mcp.CallToolRequest, in WeatherInput) (*mcp.CallToolResult, any, error) {
     result, err := tools.GetWeather(map[string]any{"city": in.City})
@@ -53,6 +56,15 @@ func fetchHandler(ctx context.Context, req *mcp.CallToolRequest, in FetchInput) 
         Content: []mcp.Content{&mcp.TextContent{Text: result}},
     }, nil, nil
 }
+func currentTimeHandler(ctx context.Context, req *mcp.CallToolRequest, in CurrentTimeInput) (*mcp.CallToolResult, any, error) {
+    result, err := tools.GetTime(nil)
+    if err != nil {
+        return nil, nil, err
+    }
+    return &mcp.CallToolResult{
+        Content: []mcp.Content{&mcp.TextContent{Text: result}},
+    }, nil, nil
+}
 
 func Start(addr string) error {
     server := mcp.NewServer(&mcp.Implementation{
@@ -75,6 +87,11 @@ func Start(addr string) error {
         Name:        "fetch_page",
         Description: "Fetch a web page via playwright-mcp and return its content as an accessibility snapshot. Requires playwright-mcp running at PLAYWRIGHT_MCP_ENDPOINT (default: http://localhost:3000/mcp)",
     }, fetchHandler)
+    
+    mcp.AddTool(server, &mcp.Tool{
+        Name:        "get_time",
+        Description: "Get the current time",
+    }, currentTimeHandler)
 
     // StreamableHTTPHandler is a handler that streams the response from the server to the client
 	handler := mcp.NewStreamableHTTPHandler(func(r *http.Request) *mcp.Server {

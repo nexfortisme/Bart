@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -23,7 +24,11 @@ var (
 
 	discordBot *bot.Bot
 
+	devModeInvokeString = ""
+	characters          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
 	seedEmbeddings bool
+	devMode        bool
 )
 
 // Mostly for loading the .env file
@@ -58,18 +63,25 @@ func main() {
 
 	// -- Command Line Arguments --
 	flag.BoolVar(&seedEmbeddings, "seed", false, "Seed embeddings into the database")
+	flag.BoolVar(&devMode, "dev", false, "Run in development mode")
 	flag.Parse()
 
 	// -- Seeding Embeddings --
 	// One off operation to be completed separate from normal operation
 	if seedEmbeddings {
 		fmt.Println("Seeding embeddings into the database...")
-		classifier.SeedEmbeddingsDataset()
+		classifier.SeedEmbeddingsDataset() // TODO - Might make sense to have the path be a command line argument
 		fmt.Println("Embeddings seeded into the database")
 		return
 	}
 
 	discordBot = bot.NewBot(os.Getenv("DISCORD_TOKEN"))
+
+	if devMode {
+		devModeInvokeString = randomString(12)
+		fmt.Printf("\nDev mode enabled, invoke string: [%s]\n\n", devModeInvokeString)
+		discordBot.SetDevModeInvokeString(devModeInvokeString)
+	}
 
 	dbPool := shared.GetDB()
 	defer dbPool.Close()
@@ -92,4 +104,13 @@ func main() {
 			return
 		}
 	}
+}
+
+func randomString(length int) string {
+	// rand.Seed(time.Now().UnixNano())
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = characters[rand.Intn(len(characters))]
+	}
+	return string(b)
 }
