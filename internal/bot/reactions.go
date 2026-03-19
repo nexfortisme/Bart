@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	ThumbsUpReaction = "👍"
+	ThumbsUpReaction   = "👍"
 	ThumbsDownReaction = "👎"
 )
 
 type PromptState struct {
-	AllowedUsers map[string]struct{}          // set of user IDs
-	Reference    *discordgo.MessageReference  // original message reference
+	AllowedUsers map[string]struct{}         // set of user IDs
+	Reference    *discordgo.MessageReference // original message reference
 }
 
 var (
@@ -23,7 +23,7 @@ var (
 )
 
 func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
-	fmt.Printf("Reaction added: %s to message %s", r.Emoji.Name, r.MessageID)
+	fmt.Printf("Reaction added: %s to message %s\n", r.Emoji.Name, r.MessageID)
 
 	// Ignore the bot's own reaction events.
 	if r.UserID == s.State.User.ID {
@@ -52,8 +52,8 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		// 	fmt.Printf("failed to send thumbs up response: %v", err)
 		// }
 
-		fmt.Printf("User %s selected thumbs up for message %s", r.UserID, r.MessageID)
-		
+		fmt.Printf("User %s selected thumbs up for message %s\n", r.UserID, r.MessageID)
+
 		// Done with this prompt
 		pendingRepliesMu.Lock()
 		delete(pendingReplies, r.MessageID)
@@ -65,7 +65,7 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		// 	fmt.Printf("failed to send thumbs down response: %v", err)
 		// }
 
-		fmt.Printf("User %s selected thumbs down for message %s", r.UserID, r.MessageID)
+		fmt.Printf("User %s selected thumbs down for message %s\n", r.UserID, r.MessageID)
 
 		// Done with this prompt
 		pendingRepliesMu.Lock()

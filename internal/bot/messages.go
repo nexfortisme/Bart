@@ -80,7 +80,7 @@ func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) f
 		}
 
 		// Adding Reactions to the Response so the User can react to the response
-		addReactionsToResponse(s, responseMessage);
+		addReactionsToResponse(s, responseMessage, m.Message);
 
 		duration := time.Since(start)
 		fmt.Printf("Handled message from %s in %s\n", m.Author.Username, duration)
@@ -93,7 +93,7 @@ func stripThinking(input string) string {
 	return re.ReplaceAllString(input, "")
 }
 
-func addReactionsToResponse(s *discordgo.Session, m *discordgo.Message) {
+func addReactionsToResponse(s *discordgo.Session, m *discordgo.Message, originalMessage *discordgo.Message) {
 	if err := s.MessageReactionAdd(m.ChannelID, m.ID, ThumbsUpReaction); err != nil {
 		fmt.Printf("failed to add thumbs up reaction: %v", err)
 	}
@@ -101,5 +101,5 @@ func addReactionsToResponse(s *discordgo.Session, m *discordgo.Message) {
 		fmt.Printf("failed to add thumbs down reaction: %v", err)
 	}
 
-	AddPendingReply(m.ID, []string{m.Author.ID}, m.Reference())
+	AddPendingReply(m.ID, []string{originalMessage.Author.ID}, m.Reference())
 }

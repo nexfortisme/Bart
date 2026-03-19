@@ -53,7 +53,7 @@ func (b *Bot) Start() {
 	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStore, b.DevModeInvokeString))
 	b.DiscordSession.AddHandler(onReactionAdd)
 
-	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds)
+	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds | discordgo.IntentGuildMessageReactions)
 
 	err = b.DiscordSession.Open()
 	if err != nil {
