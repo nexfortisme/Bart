@@ -1,0 +1,1026 @@
+{
+  "metadata": {
+    "description": "Seed data for Bart classifier dataset focused on short, casual Discord-style messages.",
+    "version": "1.0",
+    "counts": {
+      "message_intent": {
+        "directed": 50,
+        "ambient": 50
+      },
+      "tool_intent": {
+        "weather": 25,
+        "time": 25,
+        "web_search": 25,
+        "web_fetch": 25,
+        "null": 25
+      },
+      "edge_cases": 20
+    }
+  },
+  "message_intent": [
+    {
+      "text": "bart what's up",
+      "label": "directed"
+    },
+    {
+      "text": "bart help me",
+      "label": "directed"
+    },
+    {
+      "text": "hey bart",
+      "label": "directed"
+    },
+    {
+      "text": "bart can you check this",
+      "label": "directed"
+    },
+    {
+      "text": "yo bart answer me",
+      "label": "directed"
+    },
+    {
+      "text": "bart do the thing",
+      "label": "directed"
+    },
+    {
+      "text": "bart you there",
+      "label": "directed"
+    },
+    {
+      "text": "hey bart what's the weather",
+      "label": "directed"
+    },
+    {
+      "text": "bart what time is it",
+      "label": "directed"
+    },
+    {
+      "text": "bart look this up",
+      "label": "directed"
+    },
+    {
+      "text": "bart fetch that page",
+      "label": "directed"
+    },
+    {
+      "text": "bart explain this",
+      "label": "directed"
+    },
+    {
+      "text": "bart summarize this",
+      "label": "directed"
+    },
+    {
+      "text": "bart gimme a hand",
+      "label": "directed"
+    },
+    {
+      "text": "bart can u help",
+      "label": "directed"
+    },
+    {
+      "text": "bart tell me more",
+      "label": "directed"
+    },
+    {
+      "text": "bart remind me later",
+      "label": "directed"
+    },
+    {
+      "text": "bart find that link",
+      "label": "directed"
+    },
+    {
+      "text": "bart check the forecast",
+      "label": "directed"
+    },
+    {
+      "text": "bart tell me if it's raining",
+      "label": "directed"
+    },
+    {
+      "text": "bart what's the temp",
+      "label": "directed"
+    },
+    {
+      "text": "bart what day is it",
+      "label": "directed"
+    },
+    {
+      "text": "bart search this real quick",
+      "label": "directed"
+    },
+    {
+      "text": "bart open this site",
+      "label": "directed"
+    },
+    {
+      "text": "bart read this article",
+      "label": "directed"
+    },
+    {
+      "text": "bart grab the docs",
+      "label": "directed"
+    },
+    {
+      "text": "bart what does this mean",
+      "label": "directed"
+    },
+    {
+      "text": "bart answer that",
+      "label": "directed"
+    },
+    {
+      "text": "bart solve this",
+      "label": "directed"
+    },
+    {
+      "text": "bart can you translate this",
+      "label": "directed"
+    },
+    {
+      "text": "bart what's going on",
+      "label": "directed"
+    },
+    {
+      "text": "bart check online",
+      "label": "directed"
+    },
+    {
+      "text": "bart browse this",
+      "label": "directed"
+    },
+    {
+      "text": "bart use the web",
+      "label": "directed"
+    },
+    {
+      "text": "bart pull that page",
+      "label": "directed"
+    },
+    {
+      "text": "bart check the time",
+      "label": "directed"
+    },
+    {
+      "text": "bart hit me with the weather",
+      "label": "directed"
+    },
+    {
+      "text": "bart quick question",
+      "label": "directed"
+    },
+    {
+      "text": "bart need info",
+      "label": "directed"
+    },
+    {
+      "text": "bart look up gta 6",
+      "label": "directed"
+    },
+    {
+      "text": "bart find patch notes",
+      "label": "directed"
+    },
+    {
+      "text": "bart check zenless news",
+      "label": "directed"
+    },
+    {
+      "text": "bart open the wiki",
+      "label": "directed"
+    },
+    {
+      "text": "bart read the faq",
+      "label": "directed"
+    },
+    {
+      "text": "bart tell me today's date",
+      "label": "directed"
+    },
+    {
+      "text": "bart weather dc",
+      "label": "directed"
+    },
+    {
+      "text": "bart time in tokyo",
+      "label": "directed"
+    },
+    {
+      "text": "bart find flights",
+      "label": "directed"
+    },
+    {
+      "text": "bart fetch this url",
+      "label": "directed"
+    },
+    {
+      "text": "bart can you search reddit",
+      "label": "directed"
+    },
+    {
+      "text": "what's up everyone",
+      "label": "ambient"
+    },
+    {
+      "text": "i'm so tired lol",
+      "label": "ambient"
+    },
+    {
+      "text": "brb getting food",
+      "label": "ambient"
+    },
+    {
+      "text": "that patch was wild",
+      "label": "ambient"
+    },
+    {
+      "text": "anyone else see that",
+      "label": "ambient"
+    },
+    {
+      "text": "lol no way",
+      "label": "ambient"
+    },
+    {
+      "text": "this weather sucks",
+      "label": "ambient"
+    },
+    {
+      "text": "it is freezing today",
+      "label": "ambient"
+    },
+    {
+      "text": "i need coffee",
+      "label": "ambient"
+    },
+    {
+      "text": "back in 5",
+      "label": "ambient"
+    },
+    {
+      "text": "that's crazy",
+      "label": "ambient"
+    },
+    {
+      "text": "good morning chat",
+      "label": "ambient"
+    },
+    {
+      "text": "who's on rn",
+      "label": "ambient"
+    },
+    {
+      "text": "i finally fixed it",
+      "label": "ambient"
+    },
+    {
+      "text": "the docs are confusing",
+      "label": "ambient"
+    },
+    {
+      "text": "this game is eating my time",
+      "label": "ambient"
+    },
+    {
+      "text": "my internet is dying",
+      "label": "ambient"
+    },
+    {
+      "text": "give me a sec",
+      "label": "ambient"
+    },
+    {
+      "text": "i forgot what day it is",
+      "label": "ambient"
+    },
+    {
+      "text": "rain again huh",
+      "label": "ambient"
+    },
+    {
+      "text": "it feels late",
+      "label": "ambient"
+    },
+    {
+      "text": "someone post the link",
+      "label": "ambient"
+    },
+    {
+      "text": "that site is down for me",
+      "label": "ambient"
+    },
+    {
+      "text": "i should google that",
+      "label": "ambient"
+    },
+    {
+      "text": "can somebody check",
+      "label": "ambient"
+    },
+    {
+      "text": "the forecast better be wrong",
+      "label": "ambient"
+    },
+    {
+      "text": "sunset looked nice today",
+      "label": "ambient"
+    },
+    {
+      "text": "this article is long as hell",
+      "label": "ambient"
+    },
+    {
+      "text": "i hate daylight savings",
+      "label": "ambient"
+    },
+    {
+      "text": "it's almost midnight",
+      "label": "ambient"
+    },
+    {
+      "text": "today flew by",
+      "label": "ambient"
+    },
+    {
+      "text": "my room is so cold",
+      "label": "ambient"
+    },
+    {
+      "text": "wish it was warmer",
+      "label": "ambient"
+    },
+    {
+      "text": "that search result was useless",
+      "label": "ambient"
+    },
+    {
+      "text": "the wiki doesn't help",
+      "label": "ambient"
+    },
+    {
+      "text": "i found the answer nvm",
+      "label": "ambient"
+    },
+    {
+      "text": "just dropping this here",
+      "label": "ambient"
+    },
+    {
+      "text": "look at this",
+      "label": "ambient"
+    },
+    {
+      "text": "one sec i'm reading",
+      "label": "ambient"
+    },
+    {
+      "text": "gotta head out soon",
+      "label": "ambient"
+    },
+    {
+      "text": "my bad wrong channel",
+      "label": "ambient"
+    },
+    {
+      "text": "i'm hungry",
+      "label": "ambient"
+    },
+    {
+      "text": "this is actually useful",
+      "label": "ambient"
+    },
+    {
+      "text": "feels like monday",
+      "label": "ambient"
+    },
+    {
+      "text": "what a weird day",
+      "label": "ambient"
+    },
+    {
+      "text": "i'm checking the news now",
+      "label": "ambient"
+    },
+    {
+      "text": "someone send context",
+      "label": "ambient"
+    },
+    {
+      "text": "the page won't load",
+      "label": "ambient"
+    },
+    {
+      "text": "maybe later",
+      "label": "ambient"
+    },
+    {
+      "text": "we're so back",
+      "label": "ambient"
+    }
+  ],
+  "tool_intent": [
+    {
+      "text": "bart what's the weather",
+      "label": "weather"
+    },
+    {
+      "text": "weather in dc",
+      "label": "weather"
+    },
+    {
+      "text": "is it gonna rain today",
+      "label": "weather"
+    },
+    {
+      "text": "temp outside rn",
+      "label": "weather"
+    },
+    {
+      "text": "forecast for tomorrow",
+      "label": "weather"
+    },
+    {
+      "text": "how cold is it in clinton",
+      "label": "weather"
+    },
+    {
+      "text": "need the weather real quick",
+      "label": "weather"
+    },
+    {
+      "text": "will it snow this weekend",
+      "label": "weather"
+    },
+    {
+      "text": "how hot is it outside",
+      "label": "weather"
+    },
+    {
+      "text": "weather for nyc tonight",
+      "label": "weather"
+    },
+    {
+      "text": "do i need a jacket today",
+      "label": "weather"
+    },
+    {
+      "text": "rain chance today",
+      "label": "weather"
+    },
+    {
+      "text": "windy out there or nah",
+      "label": "weather"
+    },
+    {
+      "text": "forecast this afternoon",
+      "label": "weather"
+    },
+    {
+      "text": "weather this weekend",
+      "label": "weather"
+    },
+    {
+      "text": "what's the high today",
+      "label": "weather"
+    },
+    {
+      "text": "low tonight?",
+      "label": "weather"
+    },
+    {
+      "text": "hourly forecast please",
+      "label": "weather"
+    },
+    {
+      "text": "is it sunny rn",
+      "label": "weather"
+    },
+    {
+      "text": "weather in tokyo tomorrow",
+      "label": "weather"
+    },
+    {
+      "text": "how's the weather near me",
+      "label": "weather"
+    },
+    {
+      "text": "is there a storm coming",
+      "label": "weather"
+    },
+    {
+      "text": "humidity today?",
+      "label": "weather"
+    },
+    {
+      "text": "when does the rain start",
+      "label": "weather"
+    },
+    {
+      "text": "weather check",
+      "label": "weather"
+    },
+    {
+      "text": "what time is it",
+      "label": "time"
+    },
+    {
+      "text": "time in tokyo",
+      "label": "time"
+    },
+    {
+      "text": "current time in london",
+      "label": "time"
+    },
+    {
+      "text": "bart what day is it",
+      "label": "time"
+    },
+    {
+      "text": "date today",
+      "label": "time"
+    },
+    {
+      "text": "what's the time rn",
+      "label": "time"
+    },
+    {
+      "text": "time check",
+      "label": "time"
+    },
+    {
+      "text": "is it past midnight yet",
+      "label": "time"
+    },
+    {
+      "text": "what time is it in la",
+      "label": "time"
+    },
+    {
+      "text": "tell me today's date",
+      "label": "time"
+    },
+    {
+      "text": "day of week rn",
+      "label": "time"
+    },
+    {
+      "text": "bart gimme the time",
+      "label": "time"
+    },
+    {
+      "text": "local time in paris",
+      "label": "time"
+    },
+    {
+      "text": "time in dc",
+      "label": "time"
+    },
+    {
+      "text": "can you check the time",
+      "label": "time"
+    },
+    {
+      "text": "what month is it",
+      "label": "time"
+    },
+    {
+      "text": "today's date please",
+      "label": "time"
+    },
+    {
+      "text": "time now",
+      "label": "time"
+    },
+    {
+      "text": "what year is it",
+      "label": "time"
+    },
+    {
+      "text": "clock check",
+      "label": "time"
+    },
+    {
+      "text": "time in japan",
+      "label": "time"
+    },
+    {
+      "text": "date and time",
+      "label": "time"
+    },
+    {
+      "text": "bart what's the date",
+      "label": "time"
+    },
+    {
+      "text": "what's the day today",
+      "label": "time"
+    },
+    {
+      "text": "time pls",
+      "label": "time"
+    },
+    {
+      "text": "search gta 6 release rumors",
+      "label": "web_search"
+    },
+    {
+      "text": "look up zenless patch notes",
+      "label": "web_search"
+    },
+    {
+      "text": "find me a good ramen spot",
+      "label": "web_search"
+    },
+    {
+      "text": "google this for me",
+      "label": "web_search"
+    },
+    {
+      "text": "search reddit for fixes",
+      "label": "web_search"
+    },
+    {
+      "text": "can you browse for laptops",
+      "label": "web_search"
+    },
+    {
+      "text": "look up the docs",
+      "label": "web_search"
+    },
+    {
+      "text": "find the latest news on ai",
+      "label": "web_search"
+    },
+    {
+      "text": "search for flights to nyc",
+      "label": "web_search"
+    },
+    {
+      "text": "bart check online for this",
+      "label": "web_search"
+    },
+    {
+      "text": "find best budget camera",
+      "label": "web_search"
+    },
+    {
+      "text": "look up weather cams",
+      "label": "web_search"
+    },
+    {
+      "text": "search this exact phrase",
+      "label": "web_search"
+    },
+    {
+      "text": "find patch notes",
+      "label": "web_search"
+    },
+    {
+      "text": "search the wiki",
+      "label": "web_search"
+    },
+    {
+      "text": "what's the latest on ananta",
+      "label": "web_search"
+    },
+    {
+      "text": "browse the web for this",
+      "label": "web_search"
+    },
+    {
+      "text": "find me sources",
+      "label": "web_search"
+    },
+    {
+      "text": "look for coupon codes",
+      "label": "web_search"
+    },
+    {
+      "text": "search twitter reactions",
+      "label": "web_search"
+    },
+    {
+      "text": "search youtube tutorials",
+      "label": "web_search"
+    },
+    {
+      "text": "can you find comparisons",
+      "label": "web_search"
+    },
+    {
+      "text": "look up open source forum software",
+      "label": "web_search"
+    },
+    {
+      "text": "search for game reviews",
+      "label": "web_search"
+    },
+    {
+      "text": "check the web",
+      "label": "web_search"
+    },
+    {
+      "text": "open this page https://example.com",
+      "label": "web_fetch"
+    },
+    {
+      "text": "fetch this url",
+      "label": "web_fetch"
+    },
+    {
+      "text": "read this article for me",
+      "label": "web_fetch"
+    },
+    {
+      "text": "open the docs link",
+      "label": "web_fetch"
+    },
+    {
+      "text": "grab the page contents",
+      "label": "web_fetch"
+    },
+    {
+      "text": "check this site",
+      "label": "web_fetch"
+    },
+    {
+      "text": "pull this webpage",
+      "label": "web_fetch"
+    },
+    {
+      "text": "read this web page",
+      "label": "web_fetch"
+    },
+    {
+      "text": "fetch the faq page",
+      "label": "web_fetch"
+    },
+    {
+      "text": "open this link",
+      "label": "web_fetch"
+    },
+    {
+      "text": "summarize this article https://example.com/post",
+      "label": "web_fetch"
+    },
+    {
+      "text": "read the changelog page",
+      "label": "web_fetch"
+    },
+    {
+      "text": "get the contents of this url",
+      "label": "web_fetch"
+    },
+    {
+      "text": "fetch that blog post",
+      "label": "web_fetch"
+    },
+    {
+      "text": "open the wiki page",
+      "label": "web_fetch"
+    },
+    {
+      "text": "read this page and summarize",
+      "label": "web_fetch"
+    },
+    {
+      "text": "check this website real quick",
+      "label": "web_fetch"
+    },
+    {
+      "text": "pull the docs from this link",
+      "label": "web_fetch"
+    },
+    {
+      "text": "open this article",
+      "label": "web_fetch"
+    },
+    {
+      "text": "fetch webpage text",
+      "label": "web_fetch"
+    },
+    {
+      "text": "read this url",
+      "label": "web_fetch"
+    },
+    {
+      "text": "grab this page",
+      "label": "web_fetch"
+    },
+    {
+      "text": "load this site",
+      "label": "web_fetch"
+    },
+    {
+      "text": "open the release notes page",
+      "label": "web_fetch"
+    },
+    {
+      "text": "fetch this article",
+      "label": "web_fetch"
+    },
+    {
+      "text": "hey",
+      "label": "null"
+    },
+    {
+      "text": "lol",
+      "label": "null"
+    },
+    {
+      "text": "bruh",
+      "label": "null"
+    },
+    {
+      "text": "nice",
+      "label": "null"
+    },
+    {
+      "text": "gg",
+      "label": "null"
+    },
+    {
+      "text": "idk",
+      "label": "null"
+    },
+    {
+      "text": "maybe",
+      "label": "null"
+    },
+    {
+      "text": "nah",
+      "label": "null"
+    },
+    {
+      "text": "later",
+      "label": "null"
+    },
+    {
+      "text": "thanks",
+      "label": "null"
+    },
+    {
+      "text": "that's wild",
+      "label": "null"
+    },
+    {
+      "text": "rip",
+      "label": "null"
+    },
+    {
+      "text": "same",
+      "label": "null"
+    },
+    {
+      "text": "bet",
+      "label": "null"
+    },
+    {
+      "text": "real",
+      "label": "null"
+    },
+    {
+      "text": "okay",
+      "label": "null"
+    },
+    {
+      "text": "fair",
+      "label": "null"
+    },
+    {
+      "text": "yup",
+      "label": "null"
+    },
+    {
+      "text": "nope",
+      "label": "null"
+    },
+    {
+      "text": "word",
+      "label": "null"
+    },
+    {
+      "text": "true",
+      "label": "null"
+    },
+    {
+      "text": "dang",
+      "label": "null"
+    },
+    {
+      "text": "hm",
+      "label": "null"
+    },
+    {
+      "text": "oof",
+      "label": "null"
+    },
+    {
+      "text": "cool",
+      "label": "null"
+    }
+  ],
+  "edge_cases": [
+    {
+      "text": "weathering with you was good",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "time flies when the code works",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "searching my soul rn",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "fetch me a snack",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "bartender said it's raining shots",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "hey bart simpson lol",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "can someone weather this storm with me",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "i need time to think",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "web search is cooked today",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "that fetch quest sucked",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "bart what a name",
+      "message_intent": "ambient",
+      "tool_intent": "null"
+    },
+    {
+      "text": "rain check?",
+      "message_intent": "ambient",
+      "tool_intent": "weather"
+    },
+    {
+      "text": "time?",
+      "message_intent": "directed",
+      "tool_intent": "time"
+    },
+    {
+      "text": "weather?",
+      "message_intent": "directed",
+      "tool_intent": "weather"
+    },
+    {
+      "text": "search it?",
+      "message_intent": "directed",
+      "tool_intent": "web_search"
+    },
+    {
+      "text": "open this?",
+      "message_intent": "directed",
+      "tool_intent": "web_fetch"
+    },
+    {
+      "text": "bart",
+      "message_intent": "directed",
+      "tool_intent": "null"
+    },
+    {
+      "text": "dc weather or whatever",
+      "message_intent": "ambient",
+      "tool_intent": "weather"
+    },
+    {
+      "text": "today's date maybe",
+      "message_intent": "ambient",
+      "tool_intent": "time"
+    },
+    {
+      "text": "read this maybe https://example.com",
+      "message_intent": "directed",
+      "tool_intent": "web_fetch"
+    }
+  ]
+}

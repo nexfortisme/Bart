@@ -1,6 +1,7 @@
 .env
 .DS_Store
 
+resources/classifier/
 store.json
 
 *.sqlite
