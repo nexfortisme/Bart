@@ -4,12 +4,14 @@ import (
 	// "context"
 	"fmt"
 	"regexp"
-	// "strings"
-	// "time"
+	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
+
 	"github.com/nexfortisme/bart/internal/classifier"
+	"github.com/nexfortisme/bart/internal/shared"
 )
 
 var (
@@ -19,7 +21,7 @@ var (
 func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeString string) func(s *discordgo.Session, m *discordgo.MessageCreate) {
 	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-		// start := time.Now()
+		start := time.Now()
 
 		// Ignoring messages from self
 		if m.Author.ID == s.State.User.ID {
@@ -33,13 +35,18 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 
 		// s.ChannelTyping(m.ChannelID)
 
-		result := MessageIntendedForBartClassifier(m.Content, stores)
-		fmt.Println("Result:", result)
+		intentResult := MessageIntendedForBartClassifier(m.Content, stores)
+		fmt.Println("Intent Result:", intentResult)
 
 		toolResult := ToolIntentClassifier(m.Content, stores)
 		fmt.Println("Tool Result:", toolResult)
 
-		// s.ChannelMessageSendReply(m.ChannelID, result, m.Reference())
+		userConsents, err := shared.DiscordUserConsents(m.Author.ID)
+		if err != nil {
+			fmt.Println("Error getting user consents:", err)
+			return
+		}
+		fmt.Println("User Consents:", userConsents)
 
 		// if !result {
 		// 	fmt.Println("Message not intended for bot")
@@ -48,9 +55,9 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 
 		// If message doesn't start with "test_message", return
 		// Just for testing purposes
-		// if !strings.HasPrefix(m.Content, devModeInvokeString) {
-		// 	return
-		// }
+		if !strings.HasPrefix(m.Content, devModeInvokeString) {
+			return
+		}
 
 		// fmt.Println("Connecting to MCP")
 		// err := connectMCP(context.Background())
@@ -85,8 +92,8 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 		// // Adding Reactions to the Response so the User can react to the response
 		// addReactionsToResponse(s, responseMessage, m.Message);
 
-		// duration := time.Since(start)
-		// fmt.Printf("Handled message from %s in %s\n", m.Author.Username, duration)
+		duration := time.Since(start)
+		fmt.Printf("Handled message from %s in %s\n", m.Author.Username, duration)
 	}
 }
 

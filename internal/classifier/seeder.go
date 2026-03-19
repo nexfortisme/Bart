@@ -25,7 +25,7 @@ type edgeCaseEntry struct {
 }
 
 var (
-	pathToSeedData = "resources/embeddings/bart_classifier_seed_data.json"
+	pathToSeedData = "resources/embeddings/bart_classifier_seed_data_v1-1.json"
 )
 
 func SeedEmbeddingsDataset() {
@@ -78,7 +78,7 @@ func loadSection(path string, intentType IntentType) ([]Example, error) {
 
 	var entries []seedEntry
 	var includeEdgeCaseFn func(e edgeCaseEntry) (label string, ok bool)
-	
+
 	switch intentType {
 	case IntentTypeMessage:
 		entries = sd.MessageIntent
