@@ -35,6 +35,7 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	pendingRepliesMu.RUnlock()
 
 	if !exists {
+		fmt.Printf("No prompt state found for message %s\n", r.MessageID)
 		return
 	}
 
@@ -54,9 +55,12 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 
 		fmt.Printf("User %s selected thumbs up for message %s\n", r.UserID, r.MessageID)
 
+		sendConfirmationMessage(s, r.ChannelID, r.MessageID)
+
 		// Done with this prompt
 		pendingRepliesMu.Lock()
 		delete(pendingReplies, r.MessageID)
+		fmt.Printf("Deleted prompt state for message %s\n", r.MessageID)
 		pendingRepliesMu.Unlock()
 
 	case ThumbsDownReaction:
@@ -67,11 +71,25 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 
 		fmt.Printf("User %s selected thumbs down for message %s\n", r.UserID, r.MessageID)
 
+		sendConfirmationMessage(s, r.ChannelID, r.MessageID)
+
 		// Done with this prompt
 		pendingRepliesMu.Lock()
 		delete(pendingReplies, r.MessageID)
+		fmt.Printf("Deleted prompt state for message %s\n", r.MessageID)
 		pendingRepliesMu.Unlock()
 	}
+}
+
+func sendConfirmationMessage(s *discordgo.Session, channelId string, messageId string) {
+
+	originalMessage, err := s.ChannelMessage(channelId, messageId)
+	if err != nil {
+		fmt.Printf("failed to get original message: %v", err)
+		return
+	}
+
+	s.ChannelMessageSendReply(originalMessage.ChannelID, "Feedback Recieved. Thank you!", originalMessage.Reference())
 }
 
 func AddPendingReply(messageID string, userIDs []string, ref *discordgo.MessageReference) {
