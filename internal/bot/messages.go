@@ -57,7 +57,7 @@ func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) f
 		}
 
 		s.ChannelTyping(m.ChannelID)
-		fmt.Printf("Message from %s: %s", m.Author.Username, strings.Trim(m.Content, devModeInvokeString))
+		fmt.Printf("Message from %s: %s\n", m.Author.Username, strings.Trim(m.Content, devModeInvokeString))
 
 		response, err := chat(context.Background(), strings.Trim(m.Content, devModeInvokeString))
 		if err != nil {
@@ -73,7 +73,14 @@ func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) f
 			response = response[:1997] + "..."
 		}
 
-		s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
+		responseMessage, err := s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
+		if err != nil {
+			fmt.Printf("Error: %v", err)
+			return
+		}
+
+		// Adding Reactions to the Response so the User can react to the response
+		addReactionsToResponse(s, responseMessage);
 
 		duration := time.Since(start)
 		fmt.Printf("Handled message from %s in %s\n", m.Author.Username, duration)
@@ -84,4 +91,15 @@ func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) f
 func stripThinking(input string) string {
 	re := regexp.MustCompile(`(?s)<think>.*?</think>`)
 	return re.ReplaceAllString(input, "")
+}
+
+func addReactionsToResponse(s *discordgo.Session, m *discordgo.Message) {
+	if err := s.MessageReactionAdd(m.ChannelID, m.ID, ThumbsUpReaction); err != nil {
+		fmt.Printf("failed to add thumbs up reaction: %v", err)
+	}
+	if err := s.MessageReactionAdd(m.ChannelID, m.ID, ThumbsDownReaction); err != nil {
+		fmt.Printf("failed to add thumbs down reaction: %v", err)
+	}
+
+	AddPendingReply(m.ID, []string{m.Author.ID}, m.Reference())
 }

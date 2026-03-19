@@ -49,7 +49,10 @@ func (b *Bot) Start() {
 	b.ClassifierStore = classifier.NewStore()
 	b.ClassifierStore.Load(storePath)
 
+	// Handlers for Messages and Reactions
 	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStore, b.DevModeInvokeString))
+	b.DiscordSession.AddHandler(onReactionAdd)
+
 	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds)
 
 	err = b.DiscordSession.Open()
@@ -88,13 +91,6 @@ func registerSlashCommands(s *discordgo.Session) {
 			if h, ok := commandHandlers[i.ApplicationCommandData().Name]; ok {
 				h(s, i)
 			}
-			// break
-		// case discordgo.InteractionMessageComponent:
-		// 	commandNameSplit := strings.Split(i.MessageComponentData().CustomID, ":")
-		// 	if h, ok := applicationCommandHandlers[commandNameSplit[0]]; ok {
-		// 		h(s, i)
-		// 	}
-		// 	break
 		default:
 			fmt.Printf("Unknown interaction type: %v\n", i.Type)
 		}
