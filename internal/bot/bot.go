@@ -10,7 +10,10 @@ import (
 )
 
 var (
-	storePath = "resources/classifier/store.json"
+	classifierStores = map[string]string{
+		"message_intent": classifier.MessageIntentStorePath,
+		"tool_intent":    classifier.ToolIntentStorePath,
+	}
 
 	slashCommands = []*discordgo.ApplicationCommand{
 		(&commands.Consent{}).ApplicationCommand(),
@@ -24,7 +27,7 @@ var (
 type Bot struct {
 	DiscordToken        string
 	DiscordSession      *discordgo.Session
-	ClassifierStore     *classifier.MemoryStore
+	ClassifierStores    map[string]*classifier.MemoryStore
 	DevModeInvokeString string
 }
 
@@ -46,11 +49,15 @@ func (b *Bot) Start() {
 		return
 	}
 
-	b.ClassifierStore = classifier.NewStore()
-	b.ClassifierStore.Load(storePath)
+	b.ClassifierStores = make(map[string]*classifier.MemoryStore)
+	for name, path := range classifierStores {
+		store := classifier.NewStore()
+		store.Load(path)
+		b.ClassifierStores[name] = store
+	}
 
 	// Handlers for Messages and Reactions
-	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStore, b.DevModeInvokeString))
+	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStores, b.DevModeInvokeString))
 	b.DiscordSession.AddHandler(onReactionAdd)
 
 	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds | discordgo.IntentGuildMessageReactions)

@@ -4,7 +4,15 @@ import "sync"
 
 // Not needed to be in .env but is used across the package
 var (
-	storePath = "resources/classifier/store.json"
+	MessageIntentStorePath = "resources/classifier/message_intent_store.json"
+	ToolIntentStorePath    = "resources/classifier/tool_intent_store.json"
+)
+
+type IntentType string
+
+const (
+	IntentTypeMessage  IntentType = "message"
+	IntentTypeTool     IntentType = "tool"
 )
 
 // Store Structs
@@ -28,7 +36,7 @@ type MemoryStore struct {
 // Seeding Structs
 type Example struct {
 	Text   string `json:"text"`
-	Intent string `json:"intent"`
+	Intent string `json:"label"`
 }
 
 // Classifier Structs

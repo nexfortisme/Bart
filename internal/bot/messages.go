@@ -1,11 +1,11 @@
 package bot
 
 import (
-	"context"
+	// "context"
 	"fmt"
 	"regexp"
-	"strings"
-	"time"
+	// "strings"
+	// "time"
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -16,10 +16,10 @@ var (
 	mcpSession *mcp.ClientSession
 )
 
-func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) func(s *discordgo.Session, m *discordgo.MessageCreate) {
+func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeString string) func(s *discordgo.Session, m *discordgo.MessageCreate) {
 	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
-		start := time.Now()
+		// start := time.Now()
 
 		// Ignoring messages from self
 		if m.Author.ID == s.State.User.ID {
@@ -33,8 +33,11 @@ func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) f
 
 		// s.ChannelTyping(m.ChannelID)
 
-		result := MessageIntendedForBartClassifier(m.Content, store)
+		result := MessageIntendedForBartClassifier(m.Content, stores)
 		fmt.Println("Result:", result)
+
+		toolResult := ToolIntentClassifier(m.Content, stores)
+		fmt.Println("Tool Result:", toolResult)
 
 		// s.ChannelMessageSendReply(m.ChannelID, result, m.Reference())
 
@@ -45,45 +48,45 @@ func MessageReceive(store *classifier.MemoryStore, devModeInvokeString string) f
 
 		// If message doesn't start with "test_message", return
 		// Just for testing purposes
-		if !strings.HasPrefix(m.Content, devModeInvokeString) {
-			return
-		}
+		// if !strings.HasPrefix(m.Content, devModeInvokeString) {
+		// 	return
+		// }
 
-		fmt.Println("Connecting to MCP")
-		err := connectMCP(context.Background())
-		if err != nil {
-			fmt.Printf("Error connecting to MCP: %v", err)
-			return
-		}
+		// fmt.Println("Connecting to MCP")
+		// err := connectMCP(context.Background())
+		// if err != nil {
+		// 	fmt.Printf("Error connecting to MCP: %v", err)
+		// 	return
+		// }
 
-		s.ChannelTyping(m.ChannelID)
-		fmt.Printf("Message from %s: %s\n", m.Author.Username, strings.Trim(m.Content, devModeInvokeString))
+		// s.ChannelTyping(m.ChannelID)
+		// fmt.Printf("Message from %s: %s\n", m.Author.Username, strings.Trim(m.Content, devModeInvokeString))
 
-		response, err := chat(context.Background(), strings.Trim(m.Content, devModeInvokeString))
-		if err != nil {
-			fmt.Printf("Error: %v", err)
-			s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
-			return
-		}
+		// response, err := chat(context.Background(), strings.Trim(m.Content, devModeInvokeString))
+		// if err != nil {
+		// 	fmt.Printf("Error: %v", err)
+		// 	s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
+		// 	return
+		// }
 
-		response = stripThinking(response)
+		// response = stripThinking(response)
 
-		// Discord has a 2000 character limit per message
-		if len(response) > 2000 {
-			response = response[:1997] + "..."
-		}
+		// // Discord has a 2000 character limit per message
+		// if len(response) > 2000 {
+		// 	response = response[:1997] + "..."
+		// }
 
-		responseMessage, err := s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
-		if err != nil {
-			fmt.Printf("Error: %v", err)
-			return
-		}
+		// responseMessage, err := s.ChannelMessageSendReply(m.ChannelID, response, m.Reference())
+		// if err != nil {
+		// 	fmt.Printf("Error: %v", err)
+		// 	return
+		// }
 
-		// Adding Reactions to the Response so the User can react to the response
-		addReactionsToResponse(s, responseMessage, m.Message);
+		// // Adding Reactions to the Response so the User can react to the response
+		// addReactionsToResponse(s, responseMessage, m.Message);
 
-		duration := time.Since(start)
-		fmt.Printf("Handled message from %s in %s\n", m.Author.Username, duration)
+		// duration := time.Since(start)
+		// fmt.Printf("Handled message from %s in %s\n", m.Author.Username, duration)
 	}
 }
 
