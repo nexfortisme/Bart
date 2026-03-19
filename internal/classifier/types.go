@@ -11,8 +11,9 @@ var (
 type IntentType string
 
 const (
-	IntentTypeMessage  IntentType = "message"
-	IntentTypeTool     IntentType = "tool"
+	IntentTypeMessage  IntentType = "message_intent"
+	IntentTypeTool     IntentType = "tool_intent"
+	IntentTypeEdgeCase IntentType = "edge_cases"
 )
 
 // Store Structs

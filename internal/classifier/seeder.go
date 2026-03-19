@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type seedData struct {
@@ -20,7 +21,7 @@ type seedEntry struct {
 type edgeCaseEntry struct {
 	Text          string `json:"text"`
 	MessageIntent string `json:"message_intent"`
-	ToolIntent    string `json:"tool_intent"`
+	ToolIntent    *string `json:"tool_intent"`
 }
 
 var (
@@ -76,14 +77,29 @@ func loadSection(path string, intentType IntentType) ([]Example, error) {
 	}
 
 	var entries []seedEntry
-	var edgeLabelFn func(e edgeCaseEntry) string
+	var includeEdgeCaseFn func(e edgeCaseEntry) (label string, ok bool)
+	
 	switch intentType {
 	case IntentTypeMessage:
 		entries = sd.MessageIntent
-		edgeLabelFn = func(e edgeCaseEntry) string { return e.MessageIntent }
+		includeEdgeCaseFn = func(e edgeCaseEntry) (string, bool) {
+			label := strings.TrimSpace(e.MessageIntent)
+			return label, label != ""
+		}
 	case IntentTypeTool:
 		entries = sd.ToolIntent
-		edgeLabelFn = func(e edgeCaseEntry) string { return e.ToolIntent }
+		includeEdgeCaseFn = func(e edgeCaseEntry) (string, bool) {
+			if e.ToolIntent == nil {
+				return "", false
+			}
+
+			label := strings.TrimSpace(*e.ToolIntent)
+			if label == "" || strings.EqualFold(label, "null") {
+				return "", false
+			}
+
+			return label, true
+		}
 	default:
 		return nil, fmt.Errorf("unknown intent type: %s", intentType)
 	}
@@ -93,7 +109,11 @@ func loadSection(path string, intentType IntentType) ([]Example, error) {
 		examples = append(examples, Example{Text: e.Text, Intent: e.Label})
 	}
 	for _, e := range sd.EdgeCases {
-		examples = append(examples, Example{Text: e.Text, Intent: edgeLabelFn(e)})
+		label, ok := includeEdgeCaseFn(e)
+		if !ok {
+			continue
+		}
+		examples = append(examples, Example{Text: e.Text, Intent: label})
 	}
 	return examples, nil
 }
