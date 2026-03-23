@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
-
 
 func connectMCP(ctx context.Context) error {
 	client := mcp.NewClient(&mcp.Implementation{
@@ -58,11 +59,73 @@ func fetchTools(ctx context.Context) ([]Tool, error) {
 	return tools, nil
 }
 
+func coerceBool(v any) any {
+	s, ok := v.(string)
+	if !ok {
+		return v
+	}
+
+	switch strings.ToLower(strings.TrimSpace(s)) {
+	case "true":
+		return true
+	case "false":
+		return false
+	default:
+		return v
+	}
+}
+
+func coerceInt(v any) any {
+	s, ok := v.(string)
+	if !ok {
+		return v
+	}
+
+	n, err := strconv.Atoi(strings.TrimSpace(s))
+	if err != nil {
+		return v
+	}
+	return n
+}
+
+func normalizeFetchToolArgs(name string, args map[string]any) map[string]any {
+	if name != "fetch_url" && name != "fetch_urls" {
+		return args
+	}
+
+	boolFields := map[string]struct{}{
+		"extractContent":    {},
+		"returnHtml":        {},
+		"waitForNavigation": {},
+		"disableMedia":      {},
+		"debug":             {},
+	}
+	intFields := map[string]struct{}{
+		"timeout":           {},
+		"maxLength":         {},
+		"navigationTimeout": {},
+	}
+
+	for key, value := range args {
+		if _, ok := boolFields[key]; ok {
+			args[key] = coerceBool(value)
+			continue
+		}
+		if _, ok := intFields[key]; ok {
+			args[key] = coerceInt(value)
+		}
+	}
+
+	return args
+}
+
 func callTool(ctx context.Context, name string, argsJSON string) (string, error) {
 	var args map[string]any
 	if err := json.Unmarshal([]byte(argsJSON), &args); err != nil {
 		return "", fmt.Errorf("invalid tool arguments: %w", err)
 	}
+
+	args = normalizeFetchToolArgs(name, args)
 
 	fmt.Printf("\nCalling Tool: %s with args: %+v\n", name, args)
 
@@ -71,6 +134,8 @@ func callTool(ctx context.Context, name string, argsJSON string) (string, error)
 		Arguments: args,
 	})
 	if err != nil {
+		fmt.Printf("Error calling tool %s: %v\n", name, err)
+		fmt.Printf("Result: %+v\n", result)
 		return "", err
 	}
 

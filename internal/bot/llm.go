@@ -10,7 +10,6 @@ import (
 	"os"
 )
 
-
 func chat(ctx context.Context, userMessage string) (string, error) {
 	tools, err := fetchTools(ctx)
 	if err != nil {
@@ -97,7 +96,6 @@ func chatCompletion(messages []Message, tools []Tool) (*ChatResponse, error) {
 	}
 	return &chatResp, nil
 }
-
 
 func fetchSystemPrompt() string {
 	systemPrompt, err := os.ReadFile("./resources/prompts/system_prompt.md") // Relative to main.go
