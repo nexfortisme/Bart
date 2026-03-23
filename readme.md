@@ -37,7 +37,7 @@ Currently (still WIP), the message intent is being determined through 2 KNN clas
 | `SEARXNG_URL` | Similar to `LLM_BASE_URL`, the location of where a SearXNG instance is being hosted (used for the `web_search` tool). It should (haven't tested it) be able to also work with publicly available instances no problem, otherwise there is a self-hosting Docker container available. | N/a |
 | `MCP_SERVER_ADDRESS` | Not really the address (I should rename this), but the port at which the MCP server will be hosted from within the Bart app | `:8090` |
 | `MCP_URL` | This is where the MCP client from within the bot will connect to. Since it’s inside the same application, the default should apply for normal use | `http://localhost:8090/mcp` |
-| `PLAYWRIGHT_MCP_ENDPOINT` | The location of where the [Playwright MCP](https://github.com/microsoft/playwright-mcp) is being hosted. This is for use by the `web_fetch` tool for the LLM to get web page content. I don't like having to rely on a 3rd party tool, but this is what I have for the time being. | N/a |
+| `FETCHER_MCP_ENDPOINT` | The location of the fetcher MCP HTTP endpoint used by the web fetch tools. Bart will fall back to `PLAYWRIGHT_MCP_ENDPOINT` for backward compatibility, but `FETCHER_MCP_ENDPOINT` is the preferred variable now. | `http://localhost:3000/mcp` |
 
 ## Running the Application
 
@@ -49,7 +49,7 @@ You'll need:
   - I use LM Studio but Ollama probably would work just as well
 - SearXNG Instance
   - I'm running it through a Docker Container and it seems simple enough. Find docs on the [SearXNG Website](https://docs.searxng.org/admin/installation-docker.html)
-- Playwright MCP
-  - I'm just running it via the `npx` command in the console for the time being. There is undoubtedly a better approach to handle this but it’s low on my priority list since I'm not doing anything that resembles a large-scale deployment.
+- Fetcher MCP
+  - Bart now expects a fetcher MCP-compatible server that exposes `fetch_url` and `fetch_urls`. I still recommend running it locally over HTTP and pointing `FETCHER_MCP_ENDPOINT` at it. I'm running it via docker, find the docs on the [GitHub Page](https://github.com/jae-jae/fetcher-mcp?tab=readme-ov-file#deploying-with-docker-compose)
 
 It feels like a lot and I'm reasonably confident that there is a better way to handle all of this, but I'm just one dude, so cut me some slack.
