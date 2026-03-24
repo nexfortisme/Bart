@@ -26,6 +26,18 @@ Currently (still WIP), the message intent is being determined through 2 KNN clas
 - Skills
   - Building out a little list of skills for the bot to use throughout its use.
 
+## Feature Wishlist
+
+- Message Queue and Load Balancing
+  - I want to implement a system that allows for requests to the LLM to be automatically routed to multiple systems based on a configuration file. Since I have multiple systems that could run LLM models, at differing speeds, I want to have a system to be able to route messages across them.
+- Chron Tasks
+  - Have the user to be able to ask the bot to do X at Y time and have it get put into some kind of chron scheduler to do it on a recurring basis
+  - Along similar lines, I would like for the bot to be able to subscribe to an RSS feed for use. Example: Steam Update Page and have it summarize patch notes
+- Response Streaming
+  - I alreay have something like this working on Bot Person, but I want to have Bart stream back their responses as it generates it instead of waiting for the whole response to be finished.
+- API Mode
+  - Have the bot run in an "API Mode" where it doesn't connect out to discord and just serves as an API endpoint for use. Thinking about it, its just abstracting an abstraction but hopefully with the MCP connections, it serves some kind of utility
+
 ## .env File Explained
 
 | Variable | Use | Default |
