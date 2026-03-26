@@ -5,5 +5,7 @@ resources/classifier/
 store.json
 
 *.sqlite
+db.sqlite-shm
+db.sqlite-wal
 
 .claude/worktrees/
