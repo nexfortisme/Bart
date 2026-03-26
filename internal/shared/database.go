@@ -114,11 +114,7 @@ func InitializeDatabase(db *sqlite.Conn) {
 		GuildId     TEXT NOT NULL REFERENCES Guilds(GuildId),
 		UserId      TEXT NOT NULL REFERENCES DiscordUsers(DiscordUserId),
 		Content     TEXT NOT NULL DEFAULT '',
-		Type        INTEGER NOT NULL DEFAULT 0,
 		ReplyToId   TEXT REFERENCES DiscordMessages(MessageId),
-		ThreadId    TEXT,
-		EditedAt    DATETIME,
-		DeletedAt   DATETIME,
 		CreatedAt   DATETIME NOT NULL,
 		SyncedAt    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 	);`
@@ -139,9 +135,48 @@ func InitializeDatabase(db *sqlite.Conn) {
 	CREATE INDEX IF NOT EXISTS idx_discord_messages_reply
 	ON DiscordMessages(ReplyToId) WHERE ReplyToId IS NOT NULL;`
 
-	createDiscordMessagesDeletedIndex := `
-	CREATE INDEX IF NOT EXISTS idx_discord_messages_deleted
-	ON DiscordMessages(DeletedAt) WHERE DeletedAt IS NOT NULL;`
+	createMessageIntentClassificationsTable := `
+	CREATE TABLE IF NOT EXISTS MessageIntentClassifications (
+		MessageId       TEXT PRIMARY KEY REFERENCES DiscordMessages(MessageId) ON DELETE CASCADE,
+		Classification  TEXT NOT NULL,
+		CreatedAt       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		SyncedAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);`
+
+	createToolIntentClassificationsTable := `
+	CREATE TABLE IF NOT EXISTS ToolIntentClassifications (
+		MessageId       TEXT PRIMARY KEY REFERENCES DiscordMessages(MessageId) ON DELETE CASCADE,
+		Classification  TEXT NOT NULL,
+		CreatedAt       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		SyncedAt        DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+	);`
+
+	createMessageIntentClassificationsIndex := `
+	CREATE INDEX IF NOT EXISTS idx_message_intent_classification
+	ON MessageIntentClassifications(Classification, CreatedAt DESC);`
+
+	createToolIntentClassificationsIndex := `
+	CREATE INDEX IF NOT EXISTS idx_tool_intent_classification
+	ON ToolIntentClassifications(Classification, CreatedAt DESC);`
+
+	createMessageFeedbackTable := `
+	CREATE TABLE IF NOT EXISTS MessageFeedback (
+		ResponseMessageId TEXT NOT NULL,
+		OriginalMessageId TEXT NOT NULL,
+		UserId            TEXT NOT NULL REFERENCES DiscordUsers(DiscordUserId),
+		Feedback          TEXT NOT NULL,
+		CreatedAt         DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		SyncedAt          DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		PRIMARY KEY (ResponseMessageId, UserId)
+	);`
+
+	createMessageFeedbackResponseIndex := `
+	CREATE INDEX IF NOT EXISTS idx_message_feedback_response
+	ON MessageFeedback(ResponseMessageId, CreatedAt DESC);`
+
+	createMessageFeedbackOriginalIndex := `
+	CREATE INDEX IF NOT EXISTS idx_message_feedback_original
+	ON MessageFeedback(OriginalMessageId, CreatedAt DESC);`
 
 	tables := []string{
 		createGuildsTable,
@@ -153,7 +188,13 @@ func InitializeDatabase(db *sqlite.Conn) {
 		createDiscordMessagesUserIndex,
 		createDiscordMessagesGuildIndex,
 		createDiscordMessagesReplyIndex,
-		createDiscordMessagesDeletedIndex,
+		createMessageIntentClassificationsTable,
+		createToolIntentClassificationsTable,
+		createMessageIntentClassificationsIndex,
+		createToolIntentClassificationsIndex,
+		createMessageFeedbackTable,
+		createMessageFeedbackResponseIndex,
+		createMessageFeedbackOriginalIndex,
 	}
 
 	for _, table := range tables {

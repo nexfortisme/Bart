@@ -33,6 +33,24 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 			return
 		}
 
+		fmt.Println("Message Debug Information (Content): ", m.Content)
+		fmt.Println("Message Debug Information (Author ID): ", m.Author.ID)
+		fmt.Println("Message Debug Information (Author Username): ", m.Author.Username)
+		fmt.Println("Message Debug Information (Author Discriminator): ", m.Author.Discriminator)
+		fmt.Println("Message Debug Information (Author Bot): ", m.Author.Bot)
+		fmt.Println("Message Debug Information (Author Avatar URL): ", m.Author.AvatarURL(""))
+		fmt.Println("Message Debug Information (Message ID): ", m.ID)
+		fmt.Println("Message Debug Information (Reference Message ID): ", m.Reference().MessageID)
+		fmt.Println("Message Debug Information (Reference Channel ID): ", m.Reference().ChannelID)
+		fmt.Println("Message Debug Information (Reference Guild ID): ", m.Reference().GuildID)
+		fmt.Println("Message Debug Information (Channel ID): ", m.ChannelID)
+		fmt.Println("Message Debug Information (Guild ID): ", m.GuildID)
+		fmt.Println("Message Debug Information (Timestamp): ", m.Timestamp)
+		fmt.Println("Message Debug Information (Edited Timestamp): ", m.EditedTimestamp)
+		fmt.Println("Message Debug Information (TTS): ", m.TTS)
+		fmt.Println("Message Debug Information (Embeds): ", m.Embeds)
+		fmt.Println("Message Debug Information (Attachments): ", m.Attachments)
+
 		// s.ChannelTyping(m.ChannelID)
 
 		intentResult := MessageIntendedForBartClassifier(m.Content, stores)
@@ -47,6 +65,26 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 			return
 		}
 		fmt.Println("User Consents:", userConsents)
+
+		if userConsents {
+			err = shared.UpsertMessage(m)
+			if err != nil {
+				fmt.Println("Error upserting message:", err)
+				return
+			}
+
+			err = shared.UpsertMessageIntentClassification(m.ID, intentResult)
+			if err != nil {
+				fmt.Println("Error upserting message intent classification:", err)
+				return
+			}
+
+			err = shared.UpsertToolIntentClassification(m.ID, toolResult)
+			if err != nil {
+				fmt.Println("Error upserting tool intent classification:", err)
+				return
+			}
+		}
 
 		// if !result {
 		// 	fmt.Println("Message not intended for bot")
@@ -68,7 +106,7 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 		s.ChannelTyping(m.ChannelID)
 		fmt.Printf("Message from %s: %s\n", m.Author.Username, strings.Trim(m.Content, devModeInvokeString))
 
-		response, err := chat(context.Background(), strings.Trim(m.Content, devModeInvokeString))
+		response, err := chat(context.Background(), strings.Trim(m.Content, devModeInvokeString), toolResult)
 		if err != nil {
 			fmt.Printf("Error: %v", err)
 			s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
@@ -89,7 +127,7 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 		}
 
 		// Adding Reactions to the Response so the User can react to the response
-		addReactionsToResponse(s, responseMessage, m.Message);
+		addReactionsToResponse(s, responseMessage, m.Message)
 
 		duration := time.Since(start)
 		fmt.Printf("Handled message from %s in %s\n", m.Author.Username, duration)
@@ -110,5 +148,5 @@ func addReactionsToResponse(s *discordgo.Session, m *discordgo.Message, original
 		fmt.Printf("failed to add thumbs down reaction: %v", err)
 	}
 
-	AddPendingReply(m.ID, []string{originalMessage.Author.ID}, m.Reference())
+	AddPendingReply(m.ID, []string{originalMessage.Author.ID}, m.Reference(), originalMessage.ID)
 }

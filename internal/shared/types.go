@@ -54,3 +54,26 @@ type DiscordMessage struct {
 	CreatedAt time.Time
 	SyncedAt  time.Time
 }
+
+type MessageIntentClassification struct {
+	MessageId      string
+	Classification string
+	CreatedAt      time.Time
+	SyncedAt       time.Time
+}
+
+type ToolIntentClassification struct {
+	MessageId      string
+	Classification string
+	CreatedAt      time.Time
+	SyncedAt       time.Time
+}
+
+type MessageFeedback struct {
+	ResponseMessageId string
+	OriginalMessageId string
+	UserId            string
+	Feedback          string
+	CreatedAt         time.Time
+	SyncedAt          time.Time
+}

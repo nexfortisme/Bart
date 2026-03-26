@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/nexfortisme/bart/internal/shared"
 )
 
 const (
@@ -13,8 +14,9 @@ const (
 )
 
 type PromptState struct {
-	AllowedUsers map[string]struct{}         // set of user IDs
-	Reference    *discordgo.MessageReference // original message reference
+	AllowedUsers      map[string]struct{}         // set of user IDs
+	Reference         *discordgo.MessageReference // original message reference
+	OriginalMessageID string
 }
 
 var (
@@ -54,6 +56,10 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		// }
 
 		fmt.Printf("User %s selected thumbs up for message %s\n", r.UserID, r.MessageID)
+		if err := shared.UpsertMessageFeedback(r.MessageID, state.OriginalMessageID, r.UserID, "Positive"); err != nil {
+			fmt.Printf("failed to save positive feedback for message %s: %v\n", r.MessageID, err)
+			return
+		}
 
 		sendConfirmationMessage(s, r.ChannelID, r.MessageID)
 
@@ -70,6 +76,10 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		// }
 
 		fmt.Printf("User %s selected thumbs down for message %s\n", r.UserID, r.MessageID)
+		if err := shared.UpsertMessageFeedback(r.MessageID, state.OriginalMessageID, r.UserID, "Negative"); err != nil {
+			fmt.Printf("failed to save negative feedback for message %s: %v\n", r.MessageID, err)
+			return
+		}
 
 		sendConfirmationMessage(s, r.ChannelID, r.MessageID)
 
@@ -92,7 +102,7 @@ func sendConfirmationMessage(s *discordgo.Session, channelId string, messageId s
 	s.ChannelMessageSendReply(originalMessage.ChannelID, "Feedback Recieved. Thank you!", originalMessage.Reference())
 }
 
-func AddPendingReply(messageID string, userIDs []string, ref *discordgo.MessageReference) {
+func AddPendingReply(messageID string, userIDs []string, ref *discordgo.MessageReference, originalMessageID string) {
 	set := make(map[string]struct{}, len(userIDs))
 	for _, id := range userIDs {
 		set[id] = struct{}{}
@@ -100,8 +110,9 @@ func AddPendingReply(messageID string, userIDs []string, ref *discordgo.MessageR
 
 	pendingRepliesMu.Lock()
 	pendingReplies[messageID] = PromptState{
-		AllowedUsers: set,
-		Reference:    ref,
+		AllowedUsers:      set,
+		Reference:         ref,
+		OriginalMessageID: originalMessageID,
 	}
 	pendingRepliesMu.Unlock()
 }

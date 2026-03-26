@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func chat(ctx context.Context, userMessage string) (string, error) {
+func chat(ctx context.Context, userMessage string, classifiedTool string) (string, error) {
 	tools, err := fetchTools(ctx)
 	if err != nil {
 		fmt.Printf("Warning: could not fetch tools from MCP: %v — continuing without tools", err)
