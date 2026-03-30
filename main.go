@@ -12,6 +12,7 @@ import (
 
 	"github.com/nexfortisme/bart/internal/bot"
 	"github.com/nexfortisme/bart/internal/classifier"
+	"github.com/nexfortisme/bart/internal/cli"
 	internalMCP "github.com/nexfortisme/bart/internal/mcp"
 	"github.com/nexfortisme/bart/internal/shared"
 
@@ -79,31 +80,32 @@ func main() {
 
 	if devMode {
 		devModeInvokeString = randomString(12)
-		fmt.Printf("\nDev mode enabled, invoke string: [%s]\n\n", devModeInvokeString)
 		discordBot.SetDevModeInvokeString(devModeInvokeString)
 	}
 
 	dbPool := shared.GetDB()
 	defer dbPool.Close()
 
+	// Capture stdout before starting goroutines so bot operational logs
+	// are buffered and only shown when the user selects "Watch logs".
+	lm := cli.Capture()
+
+	if devMode {
+		fmt.Printf("Dev mode enabled, invoke string: [%s]\n", devModeInvokeString)
+	}
+
 	go discordBot.Start()
 	go internalMCP.Start(os.Getenv("MCP_SERVER_ADDRESS"))
 
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
-	// Main Loop
-	for {
-		select {
-		case <-fiveMinuteTicker.C:
-		case <-interrupt:
-			fmt.Print("\033[2K") // Clear the current line
-			fmt.Print("\033[0G") // Move cursor to the beginning of the line
-			fmt.Println("Interrupt received, stopping...")
-			fiveMinuteTicker.Stop()
-			discordBot.Stop()
-			return
-		}
-	}
+	cli.NewMenu(discordBot, lm, interrupt).Run()
+
+	fmt.Fprint(lm.RealOut, "\033[2K") // Clear the current line
+	fmt.Fprint(lm.RealOut, "\033[0G") // Move cursor to the beginning of the line
+	fmt.Fprintln(lm.RealOut, "Stopping...")
+	fiveMinuteTicker.Stop()
+	discordBot.Stop()
 }
 
 func randomString(length int) string {

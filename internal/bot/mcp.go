@@ -24,6 +24,9 @@ func connectMCP(ctx context.Context) error {
 }
 
 func fetchTools(ctx context.Context) ([]Tool, error) {
+	if mcpSession == nil {
+		return nil, fmt.Errorf("MCP session not connected")
+	}
 	resp, err := mcpSession.ListTools(ctx, nil)
 	if err != nil {
 		return nil, err
