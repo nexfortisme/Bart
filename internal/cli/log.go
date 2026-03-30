@@ -59,6 +59,15 @@ func (lm *LogManager) drain(r io.Reader) {
 	}
 }
 
+// Lines returns a snapshot of the current ring buffer contents.
+func (lm *LogManager) Lines() []string {
+	lm.mu.Lock()
+	defer lm.mu.Unlock()
+	out := make([]string, len(lm.lines))
+	copy(out, lm.lines)
+	return out
+}
+
 // Watch replays buffered lines then streams new ones to RealOut until done is closed.
 func (lm *LogManager) Watch(done <-chan struct{}) {
 	lm.mu.Lock()

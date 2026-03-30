@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/nexfortisme/bart/internal/bot"
@@ -23,8 +24,26 @@ func NewMenu(b *bot.Bot, lm *LogManager, interrupt chan os.Signal) *Menu {
 	return &Menu{bot: b, log: lm, out: lm.RealOut, interrupt: interrupt}
 }
 
+// showStartup waits briefly for goroutines to finish starting, then prints
+// whatever landed in the log buffer so the user sees "Bot started" etc.
+// before the menu takes over the screen.
+func (m *Menu) showStartup() {
+	time.Sleep(250 * time.Millisecond)
+	for _, line := range m.log.Lines() {
+		fmt.Fprintln(m.out, line)
+	}
+	fmt.Fprint(m.out, "\nPress any key to open menu...")
+	m.readMenuKey()
+}
+
+func (m *Menu) clear() {
+	fmt.Fprint(m.out, "\033[2J\033[H") // erase screen, move cursor to top-left
+}
+
 func (m *Menu) Run() {
+	m.showStartup()
 	for {
+		m.clear()
 		m.printMenu()
 
 		ch, ok := m.readMenuKey()
@@ -32,24 +51,23 @@ func (m *Menu) Run() {
 			return
 		}
 
-		fmt.Fprintf(m.out, "%c\n", ch)
-
 		switch unicode.ToLower(ch) {
 		case 'w':
+			m.clear()
 			m.watchLogs()
 		case 'c':
+			m.clear()
 			m.chat()
 		case 'x':
 			m.interrupt <- os.Interrupt
 			return
 		default:
-			fmt.Fprintln(m.out, "Unknown option.")
+			// Unknown key — just redraw the menu
 		}
 	}
 }
 
 func (m *Menu) printMenu() {
-	fmt.Fprintln(m.out)
 	fmt.Fprintln(m.out, "--- BART ---")
 	fmt.Fprintln(m.out, "(W) Watch logs")
 	fmt.Fprintln(m.out, "(C) Chat")
@@ -95,7 +113,8 @@ func (m *Menu) readMenuKey() (rune, bool) {
 }
 
 func (m *Menu) watchLogs() {
-	fmt.Fprintln(m.out, "\n--- Watching logs (press Enter to return to menu) ---")
+	fmt.Fprintln(m.out, "--- Watching logs (press Enter to return to menu) ---")
+	fmt.Fprintln(m.out)
 
 	done := make(chan struct{})
 	go m.log.Watch(done)
@@ -105,7 +124,8 @@ func (m *Menu) watchLogs() {
 }
 
 func (m *Menu) chat() {
-	fmt.Fprintln(m.out, "\n--- Chat (type 'exit' to return to menu) ---")
+	fmt.Fprintln(m.out, "--- Chat (type 'exit' to return to menu) ---")
+	fmt.Fprintln(m.out)
 	scanner := bufio.NewScanner(os.Stdin)
 	ctx := context.Background()
 

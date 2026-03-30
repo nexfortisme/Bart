@@ -80,7 +80,6 @@ func main() {
 
 	if devMode {
 		devModeInvokeString = randomString(12)
-		fmt.Printf("\nDev mode enabled, invoke string: [%s]\n\n", devModeInvokeString)
 		discordBot.SetDevModeInvokeString(devModeInvokeString)
 	}
 
@@ -90,6 +89,10 @@ func main() {
 	// Capture stdout before starting goroutines so bot operational logs
 	// are buffered and only shown when the user selects "Watch logs".
 	lm := cli.Capture()
+
+	if devMode {
+		fmt.Printf("Dev mode enabled, invoke string: [%s]\n", devModeInvokeString)
+	}
 
 	go discordBot.Start()
 	go internalMCP.Start(os.Getenv("MCP_SERVER_ADDRESS"))
