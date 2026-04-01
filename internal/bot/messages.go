@@ -33,28 +33,11 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 			return
 		}
 
-		fmt.Println("Message Debug Information (Content): ", m.Content)
-		fmt.Println("Message Debug Information (Author ID): ", m.Author.ID)
-		fmt.Println("Message Debug Information (Author Username): ", m.Author.Username)
-		fmt.Println("Message Debug Information (Author Discriminator): ", m.Author.Discriminator)
-		fmt.Println("Message Debug Information (Author Bot): ", m.Author.Bot)
-		fmt.Println("Message Debug Information (Author Avatar URL): ", m.Author.AvatarURL(""))
-		fmt.Println("Message Debug Information (Message ID): ", m.ID)
-		fmt.Println("Message Debug Information (Reference Message ID): ", m.Reference().MessageID)
-		fmt.Println("Message Debug Information (Reference Channel ID): ", m.Reference().ChannelID)
-		fmt.Println("Message Debug Information (Reference Guild ID): ", m.Reference().GuildID)
-		fmt.Println("Message Debug Information (Channel ID): ", m.ChannelID)
-		fmt.Println("Message Debug Information (Guild ID): ", m.GuildID)
-		fmt.Println("Message Debug Information (Timestamp): ", m.Timestamp)
-		fmt.Println("Message Debug Information (Edited Timestamp): ", m.EditedTimestamp)
-		fmt.Println("Message Debug Information (TTS): ", m.TTS)
-		fmt.Println("Message Debug Information (Embeds): ", m.Embeds)
-		fmt.Println("Message Debug Information (Attachments): ", m.Attachments)
-
+		// printMessageDebugInformation(m)
 		// s.ChannelTyping(m.ChannelID)
 
-		intentResult := MessageIntendedForBartClassifier(m.Content, stores)
-		fmt.Println("Intent Result:", intentResult)
+		messageIntentResult := MessageIntendedForBartClassifier(m.Content, stores)
+		fmt.Println("Message Intent Result:", messageIntentResult)
 
 		toolResult := ToolIntentClassifier(m.Content, stores)
 		fmt.Println("Tool Result:", toolResult)
@@ -64,8 +47,8 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 			fmt.Println("Error getting user consents:", err)
 			return
 		}
-		fmt.Println("User Consents:", userConsents)
 
+		// If User Consents, Store Message and Classificaiton
 		if userConsents {
 			err = shared.UpsertMessage(m)
 			if err != nil {
@@ -73,7 +56,7 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 				return
 			}
 
-			err = shared.UpsertMessageIntentClassification(m.ID, intentResult)
+			err = shared.UpsertMessageIntentClassification(m.ID, messageIntentResult)
 			if err != nil {
 				fmt.Println("Error upserting message intent classification:", err)
 				return
@@ -84,6 +67,12 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 				fmt.Println("Error upserting tool intent classification:", err)
 				return
 			}
+		}
+
+		switch messageIntentResult {
+			case classifier.MessageIntentDirected:
+			case classifier.MessageIntentAmbient:
+			case classifier.MessageIntentAmbiguous:
 		}
 
 		// if !result {
@@ -149,4 +138,24 @@ func addReactionsToResponse(s *discordgo.Session, m *discordgo.Message, original
 	}
 
 	AddPendingReply(m.ID, []string{originalMessage.Author.ID}, m.Reference(), originalMessage.ID)
+}
+
+func printMessageDebugInformation(m *discordgo.MessageCreate) {
+	fmt.Println("Message Debug Information (Content): ", m.Content)
+	fmt.Println("Message Debug Information (Author ID): ", m.Author.ID)
+	fmt.Println("Message Debug Information (Author Username): ", m.Author.Username)
+	fmt.Println("Message Debug Information (Author Discriminator): ", m.Author.Discriminator)
+	fmt.Println("Message Debug Information (Author Bot): ", m.Author.Bot)
+	fmt.Println("Message Debug Information (Author Avatar URL): ", m.Author.AvatarURL(""))
+	fmt.Println("Message Debug Information (Message ID): ", m.ID)
+	fmt.Println("Message Debug Information (Reference Message ID): ", m.Reference().MessageID)
+	fmt.Println("Message Debug Information (Reference Channel ID): ", m.Reference().ChannelID)
+	fmt.Println("Message Debug Information (Reference Guild ID): ", m.Reference().GuildID)
+	fmt.Println("Message Debug Information (Channel ID): ", m.ChannelID)
+	fmt.Println("Message Debug Information (Guild ID): ", m.GuildID)
+	fmt.Println("Message Debug Information (Timestamp): ", m.Timestamp)
+	fmt.Println("Message Debug Information (Edited Timestamp): ", m.EditedTimestamp)
+	fmt.Println("Message Debug Information (TTS): ", m.TTS)
+	fmt.Println("Message Debug Information (Embeds): ", m.Embeds)
+	fmt.Println("Message Debug Information (Attachments): ", m.Attachments)
 }

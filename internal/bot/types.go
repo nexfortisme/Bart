@@ -30,11 +30,12 @@ type Tool struct {
 }
 
 type ChatRequest struct {
-	Model      string    `json:"model"`
-	Messages   []Message `json:"messages"`
-	Tools      []Tool    `json:"tools,omitempty"`
-	ToolChoice string    `json:"tool_choice,omitempty"`
-	Stream     bool      `json:"stream,omitempty"`
+	Model           string    `json:"model"`
+	Messages        []Message `json:"messages"`
+	Tools           []Tool    `json:"tools,omitempty"`
+	ToolChoice      string    `json:"tool_choice,omitempty"`
+	Stream          bool      `json:"stream,omitempty"`
+	ReasoningEffort string    `json:"reasoning_effort,omitempty"`
 }
 
 type ChatResponse struct {

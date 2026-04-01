@@ -29,11 +29,11 @@ var (
 )
 
 func SeedEmbeddingsDataset() {
-	seedSection(pathToSeedData, IntentTypeMessage, MessageIntentStorePath)
-	seedSection(pathToSeedData, IntentTypeTool, ToolIntentStorePath)
+	seedSection(pathToSeedData, SeedDataTypeMessageIntent, MessageIntentStorePath)
+	seedSection(pathToSeedData, SeedDataTypeToolIntent, ToolIntentStorePath)
 }
 
-func seedSection(dataPath string, intentType IntentType, storePath string) {
+func seedSection(dataPath string, intentType SeedDataType, storePath string) {
 	examples, err := loadSection(dataPath, intentType)
 	if err != nil {
 		fmt.Printf("error loading %s: %v\n", intentType, err)
@@ -65,7 +65,7 @@ func seedSection(dataPath string, intentType IntentType, storePath string) {
 	fmt.Printf("saved store to %s\n\n", storePath)
 }
 
-func loadSection(path string, intentType IntentType) ([]Example, error) {
+func loadSection(path string, intentType SeedDataType) ([]Example, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, fmt.Errorf("could not read %s: %w", path, err)
@@ -80,13 +80,13 @@ func loadSection(path string, intentType IntentType) ([]Example, error) {
 	var includeEdgeCaseFn func(e edgeCaseEntry) (label string, ok bool)
 
 	switch intentType {
-	case IntentTypeMessage:
+	case SeedDataTypeMessageIntent:
 		entries = sd.MessageIntent
 		includeEdgeCaseFn = func(e edgeCaseEntry) (string, bool) {
 			label := strings.TrimSpace(e.MessageIntent)
 			return label, label != ""
 		}
-	case IntentTypeTool:
+	case SeedDataTypeToolIntent:
 		entries = sd.ToolIntent
 		includeEdgeCaseFn = func(e edgeCaseEntry) (string, bool) {
 			if e.ToolIntent == nil {
@@ -101,7 +101,7 @@ func loadSection(path string, intentType IntentType) ([]Example, error) {
 			return label, true
 		}
 	default:
-		return nil, fmt.Errorf("unknown intent type: %s", intentType)
+		return nil, fmt.Errorf("unknown seed data type: %s", intentType)
 	}
 
 	examples := make([]Example, 0, len(entries)+len(sd.EdgeCases))

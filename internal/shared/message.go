@@ -1,6 +1,9 @@
 package shared
 
-import "github.com/bwmarrin/discordgo"
+import (
+	"github.com/bwmarrin/discordgo"
+	"github.com/nexfortisme/bart/internal/classifier"
+)
 
 func UpsertMessage(message *discordgo.MessageCreate) error {
 	query := `
@@ -47,7 +50,7 @@ func GetReplyToMessage(messageId string) (*DiscordMessage, error) {
 	return message, nil
 }
 
-func UpsertMessageIntentClassification(messageId string, classification string) error {
+func UpsertMessageIntentClassification(messageId string, classification classifier.MessageIntent) error {
 	query := `
 	INSERT INTO MessageIntentClassifications (MessageId, Classification)
 	VALUES (?, ?)
@@ -56,10 +59,10 @@ func UpsertMessageIntentClassification(messageId string, classification string) 
 		SyncedAt = CURRENT_TIMESTAMP
 	`
 
-	return RunQuery(query, nil, messageId, classification, classification)
+	return RunQuery(query, nil, messageId, string(classification), string(classification))
 }
 
-func UpsertToolIntentClassification(messageId string, classification string) error {
+func UpsertToolIntentClassification(messageId string, classification classifier.ToolIntent) error {
 	query := `
 	INSERT INTO ToolIntentClassifications (MessageId, Classification)
 	VALUES (?, ?)
@@ -68,7 +71,7 @@ func UpsertToolIntentClassification(messageId string, classification string) err
 		SyncedAt = CURRENT_TIMESTAMP
 	`
 
-	return RunQuery(query, nil, messageId, classification, classification)
+	return RunQuery(query, nil, messageId, string(classification), string(classification))
 }
 
 func UpsertMessageFeedback(responseMessageId string, originalMessageId string, userId string, feedback string) error {

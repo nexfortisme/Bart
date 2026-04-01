@@ -8,12 +8,30 @@ var (
 	ToolIntentStorePath    = "resources/classifier/tool_intent_store.json"
 )
 
-type IntentType string
+type SeedDataType string
 
 const (
-	IntentTypeMessage  IntentType = "message_intent"
-	IntentTypeTool     IntentType = "tool_intent"
-	IntentTypeEdgeCase IntentType = "edge_cases"
+	SeedDataTypeMessageIntent  SeedDataType = "message_intent"
+	SeedDataTypeToolIntent     SeedDataType = "tool_intent"
+	SeedDataTypeEdgeCase     SeedDataType = "edge_cases"
+)
+
+type MessageIntent string
+
+const (
+	MessageIntentDirected    MessageIntent = "directed"
+	MessageIntentAmbient     MessageIntent = "ambient"
+	MessageIntentAmbiguous   MessageIntent = "ambiguous"
+)
+
+type ToolIntent string
+
+const (
+	ToolIntentWeather   ToolIntent = "weather"
+	ToolIntentTime      ToolIntent = "time"
+	ToolIntentWebSearch ToolIntent = "web_search"
+	ToolIntentWebFetch  ToolIntent = "web_fetch"
+	ToolIntentNull      ToolIntent = "null"
 )
 
 // Store Structs

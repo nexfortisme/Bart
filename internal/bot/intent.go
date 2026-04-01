@@ -11,30 +11,30 @@ const (
 	PRINT_INTENT_RESULTS = false
 )
 
-func MessageIntendedForBartClassifier(message string, stores map[string]*classifier.MemoryStore) string {
+func MessageIntendedForBartClassifier(message string, stores map[string]*classifier.MemoryStore) classifier.MessageIntent {
 	result, err := classifier.NewClassifier(classifier.NewLMStudioEmbedder(os.Getenv("LLM_BASE_URL"), os.Getenv("EMBEDDING_MODEL")), stores["message_intent"]).WithThreshold(0.7).Classify(message)
 	if err != nil {
-		return ""
+		return classifier.MessageIntentAmbiguous
 	}
 
 	if PRINT_INTENT_RESULTS {
 		printIntentResults(message, result)
 	}
 
-	return result.Intent
+	return classifier.MessageIntent(result.Intent)
 }
 
-func ToolIntentClassifier(message string, stores map[string]*classifier.MemoryStore) string {
+func ToolIntentClassifier(message string, stores map[string]*classifier.MemoryStore) classifier.ToolIntent {
 	result, err := classifier.NewClassifier(classifier.NewLMStudioEmbedder(os.Getenv("LLM_BASE_URL"), os.Getenv("EMBEDDING_MODEL")), stores["tool_intent"]).WithThreshold(0.5).Classify(message)
 	if err != nil {
-		return ""
+		return classifier.ToolIntentNull
 	}
 
 	if PRINT_INTENT_RESULTS {
 		printIntentResults(message, result)
 	}
 
-	return result.Intent
+	return classifier.ToolIntent(result.Intent)
 }
 
 func printIntentResults(message string, result classifier.ClassifierResult) {

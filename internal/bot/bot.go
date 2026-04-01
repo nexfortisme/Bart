@@ -39,6 +39,10 @@ func (b *Bot) SetDevModeInvokeString(invokeString string) {
 	b.DevModeInvokeString = invokeString
 }
 
+func (b *Bot) InDevMode() bool {
+	return b.DevModeInvokeString != ""
+}
+
 // Invite Link: https://discord.com/api/v9/oauth2/authorize?client_id= <CLIENT_ID> &permissions=517547084864&scope=bot
 // Will also need to have Message Content Intent enabled in the bot's settings in the Discord Developer Portal.
 func (b *Bot) Start() {
