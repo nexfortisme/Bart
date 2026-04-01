@@ -8,9 +8,11 @@ import (
 	"io"
 	"net/http"
 	"os"
+
+	"github.com/nexfortisme/bart/internal/classifier"
 )
 
-func chat(ctx context.Context, userMessage string, classifiedTool string) (string, error) {
+func chat(ctx context.Context, userMessage string, classifiedTool classifier.ToolIntent) (string, error) {
 	tools, err := fetchTools(ctx)
 	if err != nil {
 		fmt.Printf("Warning: could not fetch tools from MCP: %v — continuing without tools", err)

@@ -2,40 +2,39 @@ package classifier
 
 import "fmt"
 
-const (
-	IntentPositive  = "positive"
-	IntentNegative  = "negative"
-	IntentPassive   = "passive"
-	IntentAmbiguous = "ambiguous"
-)
-
-func NewClassifier(embedder Embedder, store *MemoryStore) *Classifier {
-	return &Classifier{
-		embedder:   embedder,
-		store:      store,
-		numResults: 5,
-		threshold:  0.5,
+func NewClassifier[T IntentType](embedder Embedder, store *MemoryStore) *Classifier[T] {
+	return &Classifier[T]{
+		embedder:       embedder,
+		store:          store,
+		numResults:     5,
+		threshold:      0.5,
+		fallbackIntent: *new(T),
 	}
 }
 
-func (c *Classifier) WithNumResults(numResults int) *Classifier {
+func (c *Classifier[T]) WithNumResults(numResults int) *Classifier[T] {
 	c.numResults = numResults
 	return c
 }
 
-func (c *Classifier) WithThreshold(threshold float32) *Classifier {
+func (c *Classifier[T]) WithThreshold(threshold float32) *Classifier[T] {
 	c.threshold = threshold
 	return c
 }
 
-func (c *Classifier) Classify(text string) (ClassifierResult, error) {
+func (c *Classifier[T]) WithFallbackIntent(intent T) *Classifier[T] {
+	c.fallbackIntent = intent
+	return c
+}
+
+func (c *Classifier[T]) Classify(text string) (ClassifierResult[T], error) {
 	if c.store.Len() == 0 {
-		return ClassifierResult{}, fmt.Errorf("store is empty")
+		return ClassifierResult[T]{}, fmt.Errorf("store is empty")
 	}
 
 	vector, err := c.embedder.Embed(text)
 	if err != nil {
-		return ClassifierResult{}, fmt.Errorf("embedding failed: %w", err)
+		return ClassifierResult[T]{}, fmt.Errorf("embedding failed: %w", err)
 	}
 
 	matches := c.store.Query(vector, c.numResults)
@@ -60,11 +59,15 @@ func (c *Classifier) Classify(text string) (ClassifierResult, error) {
 
 	// Nothing cleared the threshold
 	if winner == "" {
-		winner = IntentAmbiguous
+		return ClassifierResult[T]{
+			Intent:     c.fallbackIntent,
+			Confidence: 0,
+			TopMatches: matches,
+		}, nil
 	}
 
-	return ClassifierResult{
-		Intent:     winner,
+	return ClassifierResult[T]{
+		Intent:     T(winner),
 		Confidence: topScore,
 		TopMatches: matches,
 	}, nil
