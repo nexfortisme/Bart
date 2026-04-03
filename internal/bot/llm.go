@@ -12,12 +12,58 @@ import (
 	"github.com/nexfortisme/bart/internal/classifier"
 )
 
-func chat(ctx context.Context, userMessage string, classifiedTool classifier.ToolIntent) (string, error) {
-	tools, err := fetchTools(ctx)
+func mcpToolNamesForIntent(ti classifier.ToolIntent) []string {
+	switch ti {
+	case classifier.ToolIntentWeather:
+		return []string{"get_weather"}
+	case classifier.ToolIntentTime:
+		return []string{"get_time"}
+	case classifier.ToolIntentWebSearch:
+		return []string{"web_search", "fetch_url", "fetch_urls"}
+	case classifier.ToolIntentWebFetch:
+		return []string{"fetch_url", "fetch_urls"}
+	default:
+		return nil
+	}
+}
+
+func toolsForRequest(mi classifier.MessageIntent, ti classifier.ToolIntent, all []Tool) []Tool {
+	if mi == classifier.MessageIntentAmbiguous {
+		return all
+	}
+	names := mcpToolNamesForIntent(ti)
+	if len(names) == 0 {
+		return nil
+	}
+	want := make(map[string]struct{}, len(names))
+	for _, n := range names {
+		want[n] = struct{}{}
+	}
+	var out []Tool
+	for _, t := range all {
+		if _, ok := want[t.Function.Name]; ok {
+			out = append(out, t)
+		}
+	}
+	return out
+}
+
+func reasoningEffortFor(mi classifier.MessageIntent, ti classifier.ToolIntent) string {
+	if mi == classifier.MessageIntentDirected && ti == classifier.ToolIntentNull {
+		return "none"
+	}
+	return ""
+}
+
+func chat(ctx context.Context, userMessage string, messageIntent classifier.MessageIntent, toolIntent classifier.ToolIntent) (string, error) {
+	allTools, err := fetchTools(ctx)
 	if err != nil {
 		fmt.Printf("Warning: could not fetch tools from MCP: %v — continuing without tools", err)
-		tools = nil
+		allTools = nil
 	}
+
+	tools := toolsForRequest(messageIntent, toolIntent, allTools)
+	reasoning := reasoningEffortFor(messageIntent, toolIntent)
 
 	messages := []Message{
 		{Role: "system", Content: fetchSystemPrompt()},
@@ -25,7 +71,7 @@ func chat(ctx context.Context, userMessage string, classifiedTool classifier.Too
 	}
 
 	for {
-		resp, err := chatCompletion(messages, tools)
+		resp, err := chatCompletion(messages, tools, reasoning)
 		if err != nil {
 			return "", err
 		}
@@ -62,11 +108,12 @@ func chat(ctx context.Context, userMessage string, classifiedTool classifier.Too
 	}
 }
 
-func chatCompletion(messages []Message, tools []Tool) (*ChatResponse, error) {
+func chatCompletion(messages []Message, tools []Tool, reasoningEffort string) (*ChatResponse, error) {
 	req := ChatRequest{
-		Model:    os.Getenv("LLM_MODEL"),
-		Messages: messages,
-		Tools:    tools,
+		Model:           os.Getenv("LLM_MODEL"),
+		Messages:        messages,
+		Tools:           tools,
+		ReasoningEffort: reasoningEffort,
 	}
 	if len(tools) > 0 {
 		req.ToolChoice = "auto"

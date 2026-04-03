@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"strings"
+
+	"github.com/nexfortisme/bart/internal/classifier"
 )
 
 // Chat exposes the LLM for use outside the bot package (e.g. CLI chat mode).
@@ -21,5 +23,6 @@ func (b *Bot) Chat(ctx context.Context, message string) (string, error) {
 		}
 	}
 
-	return chat(ctx, message, "")
+	// CLI / interactive use: no message-intent channel; expose full tool surface.
+	return chat(ctx, message, classifier.MessageIntentAmbiguous, classifier.ToolIntentNull)
 }
