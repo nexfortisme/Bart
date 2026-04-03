@@ -69,19 +69,16 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 			}
 		}
 
-		switch messageIntentResult {
-			case classifier.MessageIntentDirected:
-			case classifier.MessageIntentAmbient:
-			case classifier.MessageIntentAmbiguous:
+		if messageIntentResult == classifier.MessageIntentAmbient {
+			fmt.Println("Skipping reply: ambient message intent")
+			return
 		}
 
-		// if !result {
-		// 	fmt.Println("Message not intended for bot")
-		// 	return
-		// }
-
-		// Just for testing purposes
-		if !strings.HasPrefix(m.Content, devModeInvokeString) {
+		if devModeInvokeString != "" && !strings.HasPrefix(m.Content, devModeInvokeString) {
+			return
+		}
+		userText := strings.TrimSpace(strings.TrimPrefix(m.Content, devModeInvokeString))
+		if userText == "" {
 			return
 		}
 
@@ -93,9 +90,9 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 		}
 
 		s.ChannelTyping(m.ChannelID)
-		fmt.Printf("Message from %s: %s\n", m.Author.Username, strings.Trim(m.Content, devModeInvokeString))
+		fmt.Printf("Message from %s: %s\n", m.Author.Username, userText)
 
-		response, err := chat(context.Background(), strings.Trim(m.Content, devModeInvokeString), toolResult)
+		response, err := chat(context.Background(), userText, messageIntentResult, toolResult)
 		if err != nil {
 			fmt.Printf("Error: %v", err)
 			s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
