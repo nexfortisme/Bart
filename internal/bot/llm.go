@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -8,6 +9,8 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sort"
+	"strings"
 
 	"github.com/nexfortisme/bart/internal/classifier"
 )
@@ -55,7 +58,9 @@ func reasoningEffortFor(mi classifier.MessageIntent, ti classifier.ToolIntent) s
 	return ""
 }
 
-func chat(ctx context.Context, userMessage string, messageIntent classifier.MessageIntent, toolIntent classifier.ToolIntent) (string, error) {
+// chat runs a multi-turn LLM session. transcript is user/assistant messages only (no system);
+// the system prompt is prepended internally.
+func chat(ctx context.Context, transcript []Message, messageIntent classifier.MessageIntent, toolIntent classifier.ToolIntent) (string, error) {
 	allTools, err := fetchTools(ctx)
 	if err != nil {
 		fmt.Printf("Warning: could not fetch tools from MCP: %v — continuing without tools", err)
@@ -65,25 +70,16 @@ func chat(ctx context.Context, userMessage string, messageIntent classifier.Mess
 	tools := toolsForRequest(messageIntent, toolIntent, allTools)
 	reasoning := reasoningEffortFor(messageIntent, toolIntent)
 
-	messages := []Message{
-		{Role: "system", Content: fetchSystemPrompt()},
-		{Role: "user", Content: userMessage},
-	}
+	messages := append([]Message{{Role: "system", Content: fetchSystemPrompt()}}, transcript...)
 
 	for {
-		resp, err := chatCompletion(messages, tools, reasoning)
+		choice, err := chatCompletionStream(ctx, messages, tools, reasoning)
 		if err != nil {
 			return "", err
 		}
 
-		if len(resp.Choices) == 0 {
-			return "", fmt.Errorf("empty response from LLM")
-		}
-
-		choice := resp.Choices[0]
 		messages = append(messages, choice.Message)
 
-		// No tool calls — model gave us a final answer
 		if choice.FinishReason != "tool_calls" || len(choice.Message.ToolCalls) == 0 {
 			if content, ok := choice.Message.Content.(string); ok {
 				return content, nil
@@ -91,7 +87,6 @@ func chat(ctx context.Context, userMessage string, messageIntent classifier.Mess
 			return "", fmt.Errorf("unexpected content type in response")
 		}
 
-		// Execute each tool call via MCP and feed results back
 		for _, tc := range choice.Message.ToolCalls {
 			result, err := callTool(ctx, tc.Function.Name, tc.Function.Arguments)
 			if err != nil {
@@ -104,28 +99,65 @@ func chat(ctx context.Context, userMessage string, messageIntent classifier.Mess
 				Content:    result,
 			})
 		}
-		// Loop: send updated conversation history back to the model
 	}
 }
 
-func chatCompletion(messages []Message, tools []Tool, reasoningEffort string) (*ChatResponse, error) {
+type streamToolCallDelta struct {
+	Index    int    `json:"index"`
+	ID       string `json:"id"`
+	Type     string `json:"type"`
+	Function struct {
+		Name      string `json:"name"`
+		Arguments string `json:"arguments"`
+	} `json:"function"`
+}
+
+type streamChoiceChunk struct {
+	Delta struct {
+		Content   *string             `json:"content"`
+		ToolCalls []streamToolCallDelta `json:"tool_calls"`
+	} `json:"delta"`
+	FinishReason *string `json:"finish_reason"`
+}
+
+type streamEnvelope struct {
+	Choices []streamChoiceChunk `json:"choices"`
+	Error   *struct {
+		Message string `json:"message"`
+	} `json:"error"`
+}
+
+type accumulatedToolCall struct {
+	id        string
+	name      string
+	arguments string
+}
+
+func chatCompletionStream(ctx context.Context, messages []Message, tools []Tool, reasoningEffort string) (*struct {
+	Message      Message
+	FinishReason string
+}, error) {
 	req := ChatRequest{
 		Model:           os.Getenv("LLM_MODEL"),
 		Messages:        messages,
 		Tools:           tools,
+		Stream:          true,
 		ReasoningEffort: reasoningEffort,
 	}
 	if len(tools) > 0 {
 		req.ToolChoice = "auto"
 	}
 
-	body, _ := json.Marshal(req)
-	httpReq, err := http.NewRequest("POST", os.Getenv("LLM_BASE_URL")+"/chat/completions", bytes.NewBuffer(body))
+	body, err := json.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, "POST", os.Getenv("LLM_BASE_URL")+"/chat/completions", bytes.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
 	httpReq.Header.Set("Content-Type", "application/json")
-	// httpReq.Header.Set("Authorization", "Bearer "+llmAPIKey) // Don't need an API key for local LM Studio
 
 	resp, err := http.DefaultClient.Do(httpReq)
 	if err != nil {
@@ -133,17 +165,109 @@ func chatCompletion(messages []Message, tools []Tool, reasoningEffort string) (*
 	}
 	defer resp.Body.Close()
 
-	respBody, _ := io.ReadAll(resp.Body)
-
 	if resp.StatusCode != http.StatusOK {
+		respBody, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("LLM error %d: %s", resp.StatusCode, string(respBody))
 	}
 
-	var chatResp ChatResponse
-	if err := json.Unmarshal(respBody, &chatResp); err != nil {
-		return nil, fmt.Errorf("failed to parse LLM response: %w", err)
+	var contentBuf strings.Builder
+	toolAcc := make(map[int]*accumulatedToolCall)
+	var finishReason string
+
+	reader := bufio.NewReader(resp.Body)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			if err == io.EOF {
+				break
+			}
+			return nil, fmt.Errorf("read LLM stream: %w", err)
+		}
+		line = strings.TrimSpace(line)
+		if line == "" {
+			continue
+		}
+		if !strings.HasPrefix(line, "data:") {
+			continue
+		}
+		payload := strings.TrimSpace(strings.TrimPrefix(line, "data:"))
+		if payload == "[DONE]" {
+			break
+		}
+
+		var env streamEnvelope
+		if err := json.Unmarshal([]byte(payload), &env); err != nil {
+			continue
+		}
+		if env.Error != nil && env.Error.Message != "" {
+			return nil, fmt.Errorf("LLM stream error: %s", env.Error.Message)
+		}
+		if len(env.Choices) == 0 {
+			continue
+		}
+		ch := env.Choices[0]
+		if ch.Delta.Content != nil {
+			contentBuf.WriteString(*ch.Delta.Content)
+		}
+		for _, d := range ch.Delta.ToolCalls {
+			tc := toolAcc[d.Index]
+			if tc == nil {
+				tc = &accumulatedToolCall{}
+				toolAcc[d.Index] = tc
+			}
+			if d.ID != "" {
+				tc.id = d.ID
+			}
+			if d.Function.Name != "" {
+				tc.name = d.Function.Name
+			}
+			tc.arguments += d.Function.Arguments
+		}
+		if ch.FinishReason != nil && *ch.FinishReason != "" {
+			finishReason = *ch.FinishReason
+		}
 	}
-	return &chatResp, nil
+
+	indices := make([]int, 0, len(toolAcc))
+	for idx := range toolAcc {
+		indices = append(indices, idx)
+	}
+	sort.Ints(indices)
+
+	var toolCalls []ToolCall
+	for _, idx := range indices {
+		tc := toolAcc[idx]
+		if tc.id == "" || tc.name == "" {
+			continue
+		}
+		toolCalls = append(toolCalls, ToolCall{
+			ID:   tc.id,
+			Type: "function",
+			Function: struct {
+				Name      string `json:"name"`
+				Arguments string `json:"arguments"`
+			}{Name: tc.name, Arguments: tc.arguments},
+		})
+	}
+
+	assistantMsg := Message{
+		Role:      "assistant",
+		Content:   contentBuf.String(),
+		ToolCalls: toolCalls,
+	}
+
+	if finishReason == "" {
+		if len(toolCalls) > 0 {
+			finishReason = "tool_calls"
+		} else {
+			finishReason = "stop"
+		}
+	}
+
+	return &struct {
+		Message      Message
+		FinishReason string
+	}{Message: assistantMsg, FinishReason: finishReason}, nil
 }
 
 func fetchSystemPrompt() string {
