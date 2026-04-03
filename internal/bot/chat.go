@@ -24,5 +24,5 @@ func (b *Bot) Chat(ctx context.Context, message string) (string, error) {
 	}
 
 	// CLI / interactive use: no message-intent channel; expose full tool surface.
-	return chat(ctx, message, classifier.MessageIntentAmbiguous, classifier.ToolIntentNull)
+	return chat(ctx, []Message{{Role: "user", Content: message}}, classifier.MessageIntentAmbiguous, classifier.ToolIntentNull)
 }

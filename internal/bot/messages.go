@@ -92,7 +92,14 @@ func MessageReceive(stores map[string]*classifier.MemoryStore, devModeInvokeStri
 		s.ChannelTyping(m.ChannelID)
 		fmt.Printf("Message from %s: %s\n", m.Author.Username, userText)
 
-		response, err := chat(context.Background(), userText, messageIntentResult, toolResult)
+		transcript, err := buildChatTranscript(s, m, userConsents, userText)
+		if err != nil {
+			fmt.Printf("Error building chat transcript: %v", err)
+			s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
+			return
+		}
+
+		response, err := chat(context.Background(), transcript, messageIntentResult, toolResult)
 		if err != nil {
 			fmt.Printf("Error: %v", err)
 			s.ChannelMessageSend(m.ChannelID, "Sorry, I ran into an error processing that.")
@@ -135,6 +142,81 @@ func addReactionsToResponse(s *discordgo.Session, m *discordgo.Message, original
 	}
 
 	AddPendingReply(m.ID, []string{originalMessage.Author.ID}, m.Reference(), originalMessage.ID)
+}
+
+func channelIDForMessageReference(ref *discordgo.MessageReference, fallback string) string {
+	if ref != nil && ref.ChannelID != "" {
+		return ref.ChannelID
+	}
+	return fallback
+}
+
+// buildChatTranscript maps Discord context into LLM messages. With consent, the full reply chain
+// is included; without consent, only the single referenced message (if any) plus the current text.
+func buildChatTranscript(s *discordgo.Session, m *discordgo.MessageCreate, userConsents bool, currentUserText string) ([]Message, error) {
+	botID := s.State.User.ID
+	channelID := m.ChannelID
+
+	if userConsents {
+		return transcriptFromReplyChain(s, channelID, m.Message, botID, currentUserText)
+	}
+
+	if m.MessageReference != nil && m.MessageReference.MessageID != "" {
+		refCh := channelIDForMessageReference(m.MessageReference, channelID)
+		prior, err := s.ChannelMessage(refCh, m.MessageReference.MessageID)
+		if err != nil {
+			return []Message{{Role: "user", Content: currentUserText}}, nil
+		}
+		priorText := strings.TrimSpace(prior.Content)
+		combined := fmt.Sprintf("Previous message:\n%s\n\nCurrent message:\n%s", priorText, currentUserText)
+		return []Message{{Role: "user", Content: combined}}, nil
+	}
+
+	return []Message{{Role: "user", Content: currentUserText}}, nil
+}
+
+func transcriptFromReplyChain(s *discordgo.Session, channelID string, leaf *discordgo.Message, botUserID, currentUserText string) ([]Message, error) {
+	const maxDepth = 50
+	var chain []*discordgo.Message
+	cur := leaf
+	for cur != nil && len(chain) < maxDepth {
+		chain = append(chain, cur)
+		if cur.MessageReference == nil || cur.MessageReference.MessageID == "" {
+			break
+		}
+		refCh := channelIDForMessageReference(cur.MessageReference, channelID)
+		parent, err := s.ChannelMessage(refCh, cur.MessageReference.MessageID)
+		if err != nil {
+			break
+		}
+		cur = parent
+	}
+	for i, j := 0, len(chain)-1; i < j; i, j = i+1, j-1 {
+		chain[i], chain[j] = chain[j], chain[i]
+	}
+
+	var out []Message
+	for i, msg := range chain {
+		content := strings.TrimSpace(msg.Content)
+		if i == len(chain)-1 {
+			content = currentUserText
+		}
+		if content == "" {
+			continue
+		}
+		if msg.Author != nil && msg.Author.Bot && msg.Author.ID != botUserID {
+			continue
+		}
+		role := "user"
+		if msg.Author != nil && msg.Author.ID == botUserID {
+			role = "assistant"
+		}
+		out = append(out, Message{Role: role, Content: content})
+	}
+	if len(out) == 0 {
+		return []Message{{Role: "user", Content: currentUserText}}, nil
+	}
+	return out, nil
 }
 
 func printMessageDebugInformation(m *discordgo.MessageCreate) {
