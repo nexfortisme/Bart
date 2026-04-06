@@ -62,7 +62,7 @@ func (b *Bot) Start() {
 	}
 
 	// Handlers for Messages and Reactions
-	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStores, b.DevModeInvokeString))
+	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStores, b.DevModeInvokeString, b.Logger))
 	b.DiscordSession.AddHandler(onReactionAdd)
 
 	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds | discordgo.IntentGuildMessageReactions)
