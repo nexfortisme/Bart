@@ -108,7 +108,6 @@ func main() {
 	go internalMCP.Start(os.Getenv("MCP_SERVER_ADDRESS"))
 
 	// -- Signal Handling --
-	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
 	for {
@@ -126,7 +125,6 @@ func main() {
 }
 
 func randomString(length int) string {
-	// rand.Seed(time.Now().UnixNano())
 	b := make([]byte, length)
 	for i := range b {
 		b[i] = characters[rand.Intn(len(characters))]
