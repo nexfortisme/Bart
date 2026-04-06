@@ -1,7 +1,7 @@
 package bot
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/bwmarrin/discordgo"
 
@@ -29,10 +29,11 @@ type Bot struct {
 	DiscordSession      *discordgo.Session
 	ClassifierStores    map[string]*classifier.MemoryStore
 	DevModeInvokeString string
+	Logger              *log.Logger
 }
 
-func NewBot(discordToken string) *Bot {
-	return &Bot{DiscordToken: discordToken, DevModeInvokeString: ""}
+func NewBot(discordToken string, logger *log.Logger) *Bot {
+	return &Bot{DiscordToken: discordToken, DevModeInvokeString: "", Logger: logger}
 }
 
 func (b *Bot) SetDevModeInvokeString(invokeString string) {
@@ -49,7 +50,7 @@ func (b *Bot) Start() {
 	var err error
 	b.DiscordSession, err = discordgo.New("Bot " + b.DiscordToken)
 	if err != nil {
-		fmt.Println("Error creating Discord session:", err)
+		b.Logger.Println("Error creating Discord session:", err)
 		return
 	}
 
@@ -68,31 +69,31 @@ func (b *Bot) Start() {
 
 	err = b.DiscordSession.Open()
 	if err != nil {
-		fmt.Println("Error opening Discord session:", err)
+		b.Logger.Println("Error opening Discord session:", err)
 		return
 	}
 
-	registerSlashCommands(b.DiscordSession)
+	registerSlashCommands(b.DiscordSession, b.Logger)
 
-	fmt.Println("Bot started")
+	b.Logger.Println("Bot started")
 }
 
 func (b *Bot) Stop() {
 	_ = b.DiscordSession.Close()
-	fmt.Println("Bot stopped")
+	b.Logger.Println("Bot stopped")
 }
 
-func registerSlashCommands(s *discordgo.Session) {
-	fmt.Println("Registering Commands...")
+func registerSlashCommands(s *discordgo.Session, logger *log.Logger) {
+	logger.Println("Registering Commands...")
 	// Used for adding slash commands
 	// Add the command and then add the handler for that command
 	// https://github.com/bwmarrin/discordgo/blob/master/examples/slash_commands/main.go
 	registeredCommands := make([]*discordgo.ApplicationCommand, len(slashCommands))
 	for i, v := range slashCommands {
-		fmt.Printf("Registering command: %v\n", v.Name)
+		logger.Printf("Registering command: %v\n", v.Name)
 		cmd, err := s.ApplicationCommandCreate(s.State.User.ID, "", v)
 		if err != nil {
-			fmt.Printf("Cannot create '%v' command: %v\n", v.Name, err)
+			logger.Printf("Cannot create '%v' command: %v\n", v.Name, err)
 		}
 		registeredCommands[i] = cmd
 	}
@@ -103,25 +104,25 @@ func registerSlashCommands(s *discordgo.Session) {
 				h(s, i)
 			}
 		default:
-			fmt.Printf("Unknown interaction type: %v\n", i.Type)
+			logger.Printf("Unknown interaction type: %v\n", i.Type)
 		}
 
 	})
 }
 
-func removeRegisteredSlashCommands(s *discordgo.Session) {
-	fmt.Println("Removing Commands...")
+func removeRegisteredSlashCommands(s *discordgo.Session, logger *log.Logger) {
+	logger.Println("Removing Commands...")
 
 	registeredCommands, err := s.ApplicationCommands(s.State.User.ID, "")
 	if err != nil {
-		fmt.Printf("Could not fetch registered commands: %v\n", err)
+		logger.Printf("Could not fetch registered commands: %v\n", err)
 	}
 
 	for _, v := range registeredCommands {
-		fmt.Printf("Removing command: %v\n", v.Name)
+		logger.Printf("Removing command: %v\n", v.Name)
 		err := s.ApplicationCommandDelete(s.State.User.ID, "", v.ID)
 		if err != nil {
-			fmt.Printf("Cannot delete '%v' command: %v\n", v.Name, err)
+			logger.Printf("Cannot delete '%v' command: %v\n", v.Name, err)
 		}
 	}
 }

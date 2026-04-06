@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"os/signal"
@@ -12,7 +13,7 @@ import (
 
 	"github.com/nexfortisme/bart/internal/bot"
 	"github.com/nexfortisme/bart/internal/classifier"
-	"github.com/nexfortisme/bart/internal/cli"
+	"github.com/nexfortisme/bart/internal/logging"
 	internalMCP "github.com/nexfortisme/bart/internal/mcp"
 	"github.com/nexfortisme/bart/internal/shared"
 
@@ -24,6 +25,9 @@ var (
 	interrupt        = make(chan os.Signal, 1)
 
 	discordBot *bot.Bot
+
+	logger *log.Logger
+	loggerCleanupFunc func() error 
 
 	devModeInvokeString = ""
 	characters          = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -67,44 +71,47 @@ func main() {
 	flag.BoolVar(&devMode, "dev", false, "Run in development mode")
 	flag.Parse()
 
+	// -- Logging --
+	logger, loggerCleanupFunc, err := logging.InitLogging()
+	if err != nil {
+		fmt.Printf("Error initializing logging: %v", err)
+		return
+	}
+	defer loggerCleanupFunc()
+	logger.Println("Logging initialized")
+
 	// -- Seeding Embeddings --
 	// One off operation to be completed separate from normal operation
 	if seedEmbeddings {
-		fmt.Println("Seeding embeddings into the database...")
+		logger.Println("Seeding embeddings into the database...")
 		classifier.SeedEmbeddingsDataset() // TODO - Might make sense to have the path be a command line argument
-		fmt.Println("Embeddings seeded into the database")
+		logger.Println("Embeddings seeded into the database")
 		return
 	}
 
-	discordBot = bot.NewBot(os.Getenv("DISCORD_TOKEN"))
+	// -- Discord Bot --
+	discordBot = bot.NewBot(os.Getenv("DISCORD_TOKEN"), logger)
 
-	if devMode {
-		devModeInvokeString = randomString(12)
-		discordBot.SetDevModeInvokeString(devModeInvokeString)
-	}
-
+	// -- Database --
 	dbPool := shared.GetDB()
 	defer dbPool.Close()
 
-	// Capture stdout before starting goroutines so bot operational logs
-	// are buffered and only shown when the user selects "Watch logs".
-	lm := cli.Capture()
-
+	// -- Dev Mode --
 	if devMode {
-		fmt.Printf("Dev mode enabled, invoke string: [%s]\n", devModeInvokeString)
+		devModeInvokeString = randomString(12)
+		discordBot.SetDevModeInvokeString(devModeInvokeString)
+		logger.Printf("Dev mode enabled, invoke string: [%s]\n", devModeInvokeString)
 	}
 
+	// -- Start Goroutines --
 	go discordBot.Start()
 	go internalMCP.Start(os.Getenv("MCP_SERVER_ADDRESS"))
 
+	// -- Signal Handling --
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
-	cli.NewMenu(discordBot, lm, interrupt).Run()
-
-	fmt.Fprint(lm.RealOut, "\033[2K") // Clear the current line
-	fmt.Fprint(lm.RealOut, "\033[0G") // Move cursor to the beginning of the line
-	fmt.Fprintln(lm.RealOut, "Stopping...")
-	fiveMinuteTicker.Stop()
+	// -- Stop Goroutines --
+	fiveMinuteTicker.Stop() // Unused ATM
 	discordBot.Stop()
 }
 
