@@ -108,11 +108,21 @@ func main() {
 	go internalMCP.Start(os.Getenv("MCP_SERVER_ADDRESS"))
 
 	// -- Signal Handling --
+	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 
-	// -- Stop Goroutines --
-	fiveMinuteTicker.Stop() // Unused ATM
-	discordBot.Stop()
+	for {
+		select {
+			case <- fiveMinuteTicker.C:
+				// logger.Println("Five minute ticker")
+			case <- interrupt:
+				logger.Println("Interrupt signal received")
+				fiveMinuteTicker.Stop()
+				discordBot.Stop()
+				logger.Println("Stopping goroutines")
+				return
+		}
+	}
 }
 
 func randomString(length int) string {

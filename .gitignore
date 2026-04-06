@@ -9,3 +9,5 @@ db.sqlite-shm
 db.sqlite-wal
 
 .claude/worktrees/
+
+.bart/*

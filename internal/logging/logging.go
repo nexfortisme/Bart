@@ -5,13 +5,20 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 )
 
 const (
-	LOG_FILE_PATH = "./logs/bart.log"
+	// ./bart/logs/bart.log
+	LOG_FILE_PATH = "./.bart/logs/bart.log"
 )
 
 func InitLogging() (*log.Logger, func() error, error) {
+	if err := os.MkdirAll(filepath.Dir(LOG_FILE_PATH), 0755); err != nil {
+		fmt.Println("Error creating log directory:", err)
+		return nil, nil, err
+	}
+
 	logFile, err := os.OpenFile(LOG_FILE_PATH, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		fmt.Println("Error opening log file:", err)
