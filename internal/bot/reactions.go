@@ -91,8 +91,11 @@ func onReactionAdd(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	}
 }
 
-func sendConfirmationMessage(s *discordgo.Session, channelId string, messageId string) {
-
+func sendConfirmationMessage(
+	s *discordgo.Session, 
+	channelId string, 
+	messageId string,
+) {
 	originalMessage, err := s.ChannelMessage(channelId, messageId)
 	if err != nil {
 		fmt.Printf("failed to get original message: %v", err)
@@ -102,7 +105,12 @@ func sendConfirmationMessage(s *discordgo.Session, channelId string, messageId s
 	s.ChannelMessageSendReply(originalMessage.ChannelID, "Feedback Recieved. Thank you!", originalMessage.Reference())
 }
 
-func AddPendingReply(messageID string, userIDs []string, ref *discordgo.MessageReference, originalMessageID string) {
+func AddPendingReply(
+	messageID string, 
+	userIDs []string, 
+	ref *discordgo.MessageReference, 
+	originalMessageID string,
+) {
 	set := make(map[string]struct{}, len(userIDs))
 	for _, id := range userIDs {
 		set[id] = struct{}{}

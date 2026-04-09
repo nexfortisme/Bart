@@ -65,6 +65,7 @@ func (b *Bot) Start() {
 	b.DiscordSession.AddHandler(MessageReceive(b.ClassifierStores, b.DevModeInvokeString, b.Logger))
 	b.DiscordSession.AddHandler(onReactionAdd)
 
+	// Intent Flags for Bot Operation
 	b.DiscordSession.Identify.Intents = discordgo.MakeIntent(discordgo.IntentsGuildMessages | discordgo.IntentsDirectMessages | discordgo.IntentsMessageContent | discordgo.IntentsGuilds | discordgo.IntentGuildMessageReactions)
 
 	err = b.DiscordSession.Open()

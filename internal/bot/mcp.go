@@ -18,8 +18,11 @@ func connectMCP(ctx context.Context) error {
 	}, nil)
 
 	transport := &mcp.StreamableClientTransport{Endpoint: os.Getenv("MCP_URL")}
+
 	var err error
+
 	mcpSession, err = client.Connect(ctx, transport, nil)
+	
 	return err
 }
 

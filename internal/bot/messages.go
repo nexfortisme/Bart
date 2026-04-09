@@ -20,13 +20,24 @@ var (
 )
 
 func MessageReceive(
-	stores map[string]*classifier.MemoryStore, 
-	devModeInvokeString string, 
+	stores map[string]*classifier.MemoryStore,
+	devModeInvokeString string,
 	logger *log.Logger,
 ) func(s *discordgo.Session, m *discordgo.MessageCreate) {
 	return func(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		start := time.Now()
+		mentionsBot := false
+		for _, user := range m.Mentions {
+			if user.ID == s.State.User.ID {
+				mentionsBot = true
+				break
+			}
+		}
+		if !mentionsBot {
+			return
+		}
+		logger.Println("Message mentions bot")
 
 		// Ignoring messages from self
 		if m.Author.ID == s.State.User.ID {
@@ -41,8 +52,15 @@ func MessageReceive(
 		// printMessageDebugInformation(m, logger)
 		// s.ChannelTyping(m.ChannelID)
 
-		messageIntentResult := MessageIntendedForBartClassifier(m.Content, stores, logger)
-		logger.Println("Message Intent Result:", messageIntentResult)
+
+		var messageIntentResult classifier.MessageIntent
+
+		if !mentionsBot {
+			messageIntentResult = MessageIntendedForBartClassifier(m.Content, stores, logger)
+			logger.Println("Message Intent Result:", messageIntentResult)
+		} else {
+			messageIntentResult = classifier.MessageIntentDirected
+		}
 
 		toolResult := ToolIntentClassifier(m.Content, stores, logger)
 		logger.Println("Tool Result:", toolResult)
@@ -74,14 +92,19 @@ func MessageReceive(
 			}
 		}
 
-		if messageIntentResult == classifier.MessageIntentAmbient {
+		// Should be handled because it would have the direct message indent if it mentions the bot
+		// But just adding this here for safety and to make myself feel better
+		if messageIntentResult == classifier.MessageIntentAmbient && !mentionsBot {
 			logger.Println("Skipping reply: ambient message intent")
 			return
 		}
 
+		// If in dev mode, only respond to messages that start with the dev mode invoke string
 		if devModeInvokeString != "" && !strings.HasPrefix(m.Content, devModeInvokeString) {
 			return
 		}
+
+
 		userText := strings.TrimSpace(strings.TrimPrefix(m.Content, devModeInvokeString))
 		if userText == "" {
 			return
@@ -146,8 +169,8 @@ func channelIDForMessageReference(ref *discordgo.MessageReference, fallback stri
 }
 
 func addReactionsToResponse(
-	s *discordgo.Session, 
-	m *discordgo.Message, 
+	s *discordgo.Session,
+	m *discordgo.Message,
 	originalMessage *discordgo.Message,
 	logger *log.Logger,
 ) {
@@ -164,9 +187,9 @@ func addReactionsToResponse(
 // buildChatTranscript maps Discord context into LLM messages. With consent, the full reply chain
 // is included; without consent, only the single referenced message (if any) plus the current text.
 func buildChatTranscript(
-	s *discordgo.Session, 
-	m *discordgo.MessageCreate, 
-	userConsents bool, 
+	s *discordgo.Session,
+	m *discordgo.MessageCreate,
+	userConsents bool,
 	currentUserText string,
 ) ([]Message, error) {
 	botID := s.State.User.ID
@@ -191,10 +214,10 @@ func buildChatTranscript(
 }
 
 func transcriptFromReplyChain(
-	s *discordgo.Session, 
-	channelID string, 
-	leaf *discordgo.Message, 
-	botUserID string, 
+	s *discordgo.Session,
+	channelID string,
+	leaf *discordgo.Message,
+	botUserID string,
 	currentUserText string,
 ) ([]Message, error) {
 

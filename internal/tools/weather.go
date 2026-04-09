@@ -1,14 +1,55 @@
 package tools
 
 import (
-    "encoding/json"
-    "fmt"
-    "io"
-    "net/http"
-    "net/url"
+	"context"
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"net/url"
+
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-func GetWeather(args map[string]any) (string, error) {
+// Tool Interface Implementation
+type WeatherTool struct {
+	Tool
+}
+
+type WeatherInput struct {
+	City string `json:"city" jsonschema:"the city to get weather for"`
+}
+
+func (t *WeatherTool) ToolInput() any {
+	return WeatherInput{}
+}
+
+func (t *WeatherTool) ToolHandlerFn() func(ctx context.Context, req *mcp.CallToolRequest, in any) (*mcp.CallToolResult, any, error) {
+	return func(ctx context.Context, req *mcp.CallToolRequest, in any) (*mcp.CallToolResult, any, error) {
+		input, ok := in.(WeatherInput)
+		if !ok {
+			return nil, nil, fmt.Errorf("invalid input type for get_weather")
+		}
+		result, err := getWeather(map[string]any{"city": input.City})
+		if err != nil {
+			return nil, nil, err
+		}
+		return &mcp.CallToolResult{
+			Content: []mcp.Content{&mcp.TextContent{Text: result}},
+		}, nil, nil
+	}
+}
+
+func (t *WeatherTool) GetTool() *mcp.Tool {
+	return &mcp.Tool{
+		Name:        "get_weather",
+		Description: "Get current weather for a city",
+        // InputSchema: t.ToolInput(),
+	}
+}
+
+// Tool Utility Implementation
+func getWeather(args map[string]any) (string, error) {
     city, ok := args["city"].(string)
     if !ok || city == "" {
         return "", fmt.Errorf("city argument required")
