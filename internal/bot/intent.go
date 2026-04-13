@@ -13,7 +13,7 @@ const (
 )
 
 func MessageIntendedForBartClassifier(
-	message string, 
+	message string,
 	stores map[string]*classifier.MemoryStore,
 	logger *log.Logger,
 ) classifier.MessageIntent {
@@ -36,7 +36,7 @@ func MessageIntendedForBartClassifier(
 }
 
 func ToolIntentClassifier(
-	message string, 
+	message string,
 	stores map[string]*classifier.MemoryStore,
 	logger *log.Logger,
 ) classifier.ToolIntent {
@@ -59,14 +59,14 @@ func ToolIntentClassifier(
 }
 
 func printIntentResults(
-	message string, 
-	result classifier.ClassifierResult, 
+	message string,
+	result classifier.ClassifierResult,
 	logger *log.Logger,
 ) {
-	logger.Printf("\nmessage:    %q\n", message)
+	logger.Printf("message:    %q\n", message)
 	logger.Printf("intent:     %s\n", result.Intent)
 	logger.Printf("confidence: %.4f\n", result.Confidence)
-	logger.Println("\ntop matches:")
+	logger.Printf("top matches:\n")
 
 	for i, match := range result.TopMatches {
 		logger.Printf("  %d. [%.4f] [%s] %q\n",
